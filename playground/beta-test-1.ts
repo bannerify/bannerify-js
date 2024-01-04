@@ -10,7 +10,7 @@ console.log(
   client.generateImageSignedUrl('tpl_rVbG8o2cWA', {
     modifications: [{
       name: 'Text',
-      text: 'Hello World',
+      text: 'Hello World 123',
     }]
   })
 )

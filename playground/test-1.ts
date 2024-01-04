@@ -6,6 +6,7 @@ const client = createClient({
   baseUrl: 'http://localhost:8788/api/v1',
 })
 
+
 console.log(
   client.generateImageSignedUrl('tpl_rVbG8o2cWA', {
     modifications: [{
