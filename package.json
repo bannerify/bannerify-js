@@ -1,6 +1,6 @@
 {
   "name": "bannerify-node",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "type": "module",
   "main": "index.js",
@@ -20,7 +20,9 @@
     }
   },
   "keywords": [],
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "author": "Duc An <an@bannerify.co>",
   "license": "ISC",
   "devDependencies": {
