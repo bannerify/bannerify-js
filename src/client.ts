@@ -39,7 +39,7 @@ export class Bannerify {
     templateId: string,
     options?: CreateOptions,
   ) {
-    return this.client.get('image/create', {
+    return this.client.get('template/createImage', {
       searchParams: {
         modifications: JSON.stringify(options?.modifications ?? []),
         templateId,
@@ -54,7 +54,7 @@ export class Bannerify {
     templateId: string,
     options?: CreateOptions,
   ) {
-    return this.client.get('image/create-pdf', {
+    return this.client.get('template/createPdf', {
       searchParams: {
         modifications: JSON.stringify(options?.modifications ?? []),
         templateId,
@@ -79,6 +79,6 @@ export class Bannerify {
     searchParams.set('modifications', JSON.stringify(options?.modifications ?? []))
     searchParams.set('templateId', templateId)
     searchParams.set('sign', crypto.createHash('md5').update(searchParams.toString() + apiKeyAsMd5).digest('hex'))
-    return `${this.opts.baseUrl}/image/signed-url?${searchParams.toString()}`
+    return `${this.opts.baseUrl}/template/imageSignedUrl?${searchParams.toString()}`
   }
 }
