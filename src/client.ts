@@ -1,6 +1,7 @@
 import ky from 'ky'
-import { version } from "../package.json"
-import { Modification } from "./interface"
+import crypto from 'node:crypto'
+import { version } from '../package.json'
+import { Modification } from './interface'
 
 interface Options {
   apiKey: string
@@ -29,7 +30,7 @@ export class Bannerify {
       prefixUrl: opts.baseUrl ?? 'https://beta.bannerify.co/api/v1',
       headers: {
         Authorization: `Bearer ${opts.apiKey}`,
-        "X-SDK-Version": `${version}`,
+        'X-SDK-Version': `${version}`,
       },
     })
   }
@@ -49,15 +50,35 @@ export class Bannerify {
       .arrayBuffer()
   }
 
-  async createPdf() {
-    throw new Error("Not implemented")
+  async createPdf(
+    templateId: string,
+    options?: CreateOptions,
+  ) {
+    return this.client.get('image/create-pdf', {
+      searchParams: {
+        modifications: JSON.stringify(options?.modifications ?? []),
+        templateId,
+        apiKey: this.opts.apiKey,
+      },
+      timeout: options?.timeout,
+    })
+      .arrayBuffer()
   }
 
   async createPermanentImage() {
-    throw new Error("Not implemented")
+    throw new Error('Not yet implemented')
   }
 
-  async createImageWithSignedUrl() {
-    throw new Error("Not implemented")
+  generateImageSignedUrl(
+    templateId: string,
+    options?: CreateOptions,
+  ) {
+    const apiKeyAsMd5 = crypto.createHash('md5').update(this.opts.apiKey).digest('hex')
+    const searchParams = new URLSearchParams()
+    searchParams.set('apiKeyMd5', apiKeyAsMd5)
+    searchParams.set('modifications', JSON.stringify(options?.modifications ?? []))
+    searchParams.set('templateId', templateId)
+    searchParams.set('sign', crypto.createHash('md5').update(searchParams.toString() + apiKeyAsMd5).digest('hex'))
+    return `${this.opts.baseUrl}/image/signed-url?${searchParams.toString()}`
   }
 }
