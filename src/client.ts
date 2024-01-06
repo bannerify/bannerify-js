@@ -26,8 +26,8 @@ export class Bannerify {
     private readonly opts: Options
   ) {
     this.client = ky.create({
-      fetch: opts.fetch ?? fetch,
-      prefixUrl: opts.baseUrl ?? 'https://beta.bannerify.co/api/v1',
+      fetch: opts.fetch || fetch,
+      prefixUrl: opts.baseUrl || 'https://beta.bannerify.co/api/v1',
       headers: {
         Authorization: `Bearer ${opts.apiKey}`,
         'X-SDK-Version': `${version}`,
