@@ -1,0 +1,15 @@
+{
+  "name": "branded-logo",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "bannerify-node": "^0.0.2"
+  }
+}

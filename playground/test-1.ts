@@ -1,5 +1,4 @@
 import { createClient, HTTPError } from "../src"
-import * as fs from "fs"
 
 const client = createClient({
   apiKey: '123123',

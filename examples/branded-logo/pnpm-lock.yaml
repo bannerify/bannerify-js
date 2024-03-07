@@ -1,0 +1,16 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+dependencies:
+  bannerify-node:
+    specifier: ^0.0.2
+    version: 0.0.2
+
+packages:
+
+  /bannerify-node@0.0.2:
+    resolution: {integrity: sha512-wXGQGkK0KOCllFmadeaorePSuULYVDA9TPl4aXWZJ2g1ZgSXsLulWH/LHdscT1feDjcAQ/eg7E98G3bMX9hcaA==}
+    dev: false
