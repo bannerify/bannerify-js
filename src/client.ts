@@ -11,6 +11,7 @@ interface Options {
 
 type CreateOptions = {
   modifications?: Modification[]
+  container?: Modification
   // default 10s
   timeout?: number
 }
@@ -42,6 +43,7 @@ export class Bannerify {
     return this.client.get('templates/createImage', {
       searchParams: {
         modifications: JSON.stringify(options?.modifications ?? []),
+        container: JSON.stringify(options?.container ?? {}),
         templateId,
         apiKey: this.opts.apiKey,
       },
