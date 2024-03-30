@@ -12,6 +12,8 @@ interface Options {
 type CreateOptions = {
   modifications?: Modification[]
   container?: Modification
+  // @default: png
+  format?: 'svg' | 'png'
   // default 10s
   timeout?: number
 }
