@@ -8,6 +8,7 @@
     "test": "bun test",
     "play": "tsx playground/test.ts",
     "openapi": "openapi-typescript https://beta.bannerify.co/api/v1/openapi.json -o ./src/openapi.d.ts",
+    "openapi-local": "openapi-typescript http://localhost:8788/api/v1/openapi.json -o ./src/openapi.d.ts",
     "build:watch": "tsup --watch",
     "build": "tsup"
   },
@@ -26,6 +27,7 @@
   "author": "Duc An <an@bannerify.co>",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@types/node": "18.15.3",
     "bun-types": "^1.0.20",
     "chart.js": "^4.4.1",

@@ -42,16 +42,20 @@ export class Bannerify {
     templateId: string,
     options?: CreateOptions,
   ) {
-    return this.client.get('templates/createImage', {
+    const res = this.client.get('templates/createImage', {
       searchParams: {
         modifications: JSON.stringify(options?.modifications ?? []),
         container: JSON.stringify(options?.container ?? {}),
         templateId,
         apiKey: this.opts.apiKey,
+        format: options?.format as string,
       },
       timeout: options?.timeout,
     })
-      .arrayBuffer()
+    if (options?.format === 'svg') {
+      return res.text()
+    }
+    return res.arrayBuffer()
   }
 
   async createPdf(
