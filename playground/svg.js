@@ -9,16 +9,6 @@ const client = createClient({
 
 try {
   const result = await client.createImage('tpl_E99d1wLEL1', {
-    modifications: [{
-      name: 'Image 1',
-      src: 'https://cdn.jsdelivr.net/gh/remojansen/logo.ts@master/ts.svg',
-    }, {
-      name: 'Text',
-      text: 'google.com',
-    }, {
-      name: 'Text 1',
-      text: faker.lorem.sentences(4),
-    }],
     format: 'svg'
   })
   console.log(result)

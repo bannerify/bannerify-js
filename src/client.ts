@@ -84,7 +84,9 @@ export class Bannerify {
     const apiKeyAsMd5 = crypto.createHash('md5').update(this.opts.apiKey).digest('hex')
     const searchParams = new URLSearchParams()
     searchParams.set('apiKeyMd5', apiKeyAsMd5)
-    searchParams.set('modifications', JSON.stringify(options?.modifications ?? []))
+    if (options?.modifications) {
+      searchParams.set('modifications', JSON.stringify(options?.modifications))
+    }
     searchParams.set('templateId', templateId)
     searchParams.set('sign', crypto.createHash('md5').update(searchParams.toString() + apiKeyAsMd5).digest('hex'))
     return `${this.opts.baseUrl}/templates/imageSignedUrl?${searchParams.toString()}`
