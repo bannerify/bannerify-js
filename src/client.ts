@@ -25,12 +25,15 @@ export function createClient(opts: Options) {
 export class Bannerify {
   private readonly client: typeof ky
 
+  private readonly baseUrl: string
+
   constructor(
     private readonly opts: Options
   ) {
+    this.baseUrl = opts.baseUrl || 'https://beta.bannerify.co/api/v1'
     this.client = ky.create({
       fetch: opts.fetch || fetch,
-      prefixUrl: opts.baseUrl || 'https://beta.bannerify.co/api/v1',
+      prefixUrl: this.baseUrl,
       headers: {
         Authorization: `Bearer ${opts.apiKey}`,
         'X-SDK-Version': `${version}`,
@@ -87,8 +90,11 @@ export class Bannerify {
     if (options?.modifications) {
       searchParams.set('modifications', JSON.stringify(options?.modifications))
     }
+    if (options?.format === 'svg') {
+      searchParams.set('format', 'svg')
+    }
     searchParams.set('templateId', templateId)
     searchParams.set('sign', crypto.createHash('md5').update(searchParams.toString() + apiKeyAsMd5).digest('hex'))
-    return `${this.opts.baseUrl}/templates/imageSignedUrl?${searchParams.toString()}`
+    return `${this.baseUrl}/templates/imageSignedUrl?${searchParams.toString()}`
   }
 }
