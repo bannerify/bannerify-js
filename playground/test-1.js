@@ -13,6 +13,7 @@ console.log(
         name: 'Description',
         text: 'hello world 123'
       },
-    ]
+    ],
+    format: 'svg'
   })
 )

@@ -87,11 +87,11 @@ export class Bannerify {
     const apiKeyAsMd5 = crypto.createHash('md5').update(this.opts.apiKey).digest('hex')
     const searchParams = new URLSearchParams()
     searchParams.set('apiKeyMd5', apiKeyAsMd5)
-    if (options?.modifications) {
-      searchParams.set('modifications', JSON.stringify(options?.modifications))
-    }
     if (options?.format === 'svg') {
       searchParams.set('format', 'svg')
+    }
+    if (options?.modifications) {
+      searchParams.set('modifications', JSON.stringify(options?.modifications))
     }
     searchParams.set('templateId', templateId)
     searchParams.set('sign', crypto.createHash('md5').update(searchParams.toString() + apiKeyAsMd5).digest('hex'))
