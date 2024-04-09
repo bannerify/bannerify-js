@@ -4,7 +4,8 @@
     "jsx": "react-jsxdev",
     "lib": [
       "esnext",
-      "dom"
+      "dom",
+      "webworker"
     ],
     "types": ["bun-types"],
     "module": "esnext",

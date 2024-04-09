@@ -1,5 +1,4 @@
 import ky from 'ky'
-import crypto from 'node:crypto'
 import { version } from '../package.json'
 import { Modification } from './interface'
 
@@ -80,11 +79,19 @@ export class Bannerify {
     throw new Error('Not yet implemented')
   }
 
-  generateImageSignedUrl(
+  #hashText = async(text:string) => {
+    const myText = new TextEncoder().encode('Hello world!');
+    const myDigest = await crypto.subtle.digest({ name: 'SHA-256' }, myText);
+    const hashArray = Array.from(new Uint8Array(myDigest));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    return hashHex
+  }
+
+  async generateImageSignedUrl(
     templateId: string,
     options?: CreateOptions,
   ) {
-    const apiKeyAsMd5 = crypto.createHash('md5').update(this.opts.apiKey).digest('hex')
+    const apiKeyAsMd5 = await this.#hashText(this.opts.apiKey)
     const searchParams = new URLSearchParams()
     searchParams.set('apiKeyMd5', apiKeyAsMd5)
     if (options?.format === 'svg') {
@@ -94,7 +101,7 @@ export class Bannerify {
       searchParams.set('modifications', JSON.stringify(options?.modifications))
     }
     searchParams.set('templateId', templateId)
-    searchParams.set('sign', crypto.createHash('md5').update(searchParams.toString() + apiKeyAsMd5).digest('hex'))
+    searchParams.set('sign', await this.#hashText(searchParams.toString() + apiKeyAsMd5))
     return `${this.baseUrl}/templates/imageSignedUrl?${searchParams.toString()}`
   }
 }
