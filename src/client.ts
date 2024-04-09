@@ -80,7 +80,7 @@ export class Bannerify {
   }
 
   #hashText = async(text:string) => {
-    const myText = new TextEncoder().encode('Hello world!');
+    const myText = new TextEncoder().encode(text);
     const myDigest = await crypto.subtle.digest({ name: 'SHA-256' }, myText);
     const hashArray = Array.from(new Uint8Array(myDigest));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
