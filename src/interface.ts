@@ -60,6 +60,13 @@ export type Modification = {
    */
   barcode?: string
   /**
+   * icon name
+   * @example Menu
+   * @default The default icon name of the layer
+   * @description Modify the icon name with this field
+   */
+  icon?: string
+  /**
    * visibility
    * @example true
    * @default The default visibility of the layer
