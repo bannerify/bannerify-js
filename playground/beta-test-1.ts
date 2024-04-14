@@ -1,5 +1,4 @@
-import { createClient, HTTPError } from "../src"
-import * as fs from "fs"
+import { createClient, HTTPError } from '../dist'
 
 const client = createClient({
   apiKey: '123123',
@@ -7,10 +6,10 @@ const client = createClient({
 })
 
 console.log(
-  client.generateImageSignedUrl('tpl_rVbG8o2cWA', {
-    modifications: [{
+  await client.generateImageSignedUrl('tpl_rVbG8o2cWA', {
+    /*modifications: [{
       name: 'Text',
       text: 'Hello World 123',
-    }]
+    }]*/
   })
 )

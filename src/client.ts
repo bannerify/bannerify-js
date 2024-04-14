@@ -101,7 +101,9 @@ export class Bannerify {
       searchParams.set('modifications', JSON.stringify(options?.modifications))
     }
     searchParams.set('templateId', templateId)
-    searchParams.set('sign', await this.#hashText(searchParams.toString() + apiKeyAsMd5))
+    searchParams.sort()
+    // TODO update to this.opts.apiKey
+    searchParams.set('sign', await this.#hashText(searchParams.toString() + searchParams.get('apiKeyMd5')))
     return `${this.baseUrl}/templates/imageSignedUrl?${searchParams.toString()}`
   }
 }
