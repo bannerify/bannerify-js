@@ -29,7 +29,7 @@ export class Bannerify {
   constructor(
     private readonly opts: Options
   ) {
-    this.baseUrl = opts.baseUrl || 'https://beta.bannerify.co/api/v1'
+    this.baseUrl = opts.baseUrl || 'https://api-beta.bannerify.co/api/v1'
     this.client = ky.create({
       fetch: opts.fetch || fetch,
       prefixUrl: this.baseUrl,

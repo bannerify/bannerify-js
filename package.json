@@ -7,8 +7,8 @@
   "scripts": {
     "test": "bun test",
     "play": "tsx playground/test.ts",
-    "openapi": "openapi-typescript https://beta.bannerify.co/api/v1/openapi.json -o ./src/openapi.d.ts",
-    "openapi-local": "openapi-typescript http://localhost:8788/api/v1/openapi.json -o ./src/openapi.d.ts",
+    "openapi": "openapi-typescript https://api-beta.bannerify.co/api/v1/openapi.json -o ./src/openapi.d.ts",
+    "openapi-local": "openapi-typescript http://localhost:5173/api/v1/openapi.json -o ./src/openapi.d.ts",
     "build:watch": "tsup --watch",
     "build": "tsup"
   },
