@@ -1,11 +1,14 @@
-import ky from 'ky'
-import { version } from '../package.json'
+import ky, { HTTPError, TimeoutError } from 'ky'
+import { getTelemetry } from './telemetry'
 import { Modification } from './interface'
+import { ErrorResponse, Result, timeoutError } from './types'
 
 interface Options {
   apiKey: string
   fetch?: typeof fetch
   baseUrl?: string
+  // default 10s
+  timeout?: number
 }
 
 type CreateOptions = {
@@ -13,12 +16,10 @@ type CreateOptions = {
   container?: Modification
   // @default: png
   format?: 'svg' | 'png'
-  // default 10s
-  timeout?: number
 }
 
-export function createClient(opts: Options) {
-  return new Bannerify(opts)
+export function createClient(apiKey: string, opts?: Options) {
+  return new Bannerify(apiKey, opts)
 }
 
 export class Bannerify {
@@ -27,62 +28,68 @@ export class Bannerify {
   private readonly baseUrl: string
 
   constructor(
-    private readonly opts: Options
+    private readonly apiKey: string,
+    private readonly opts?: Options
   ) {
-    this.baseUrl = opts.baseUrl || 'https://api-beta.bannerify.co/api/v1'
+    const telemetry = getTelemetry()
+    this.baseUrl = opts?.baseUrl || 'https://api-beta.bannerify.co/v1'
     this.client = ky.create({
-      fetch: opts.fetch || fetch,
+      fetch: opts?.fetch || fetch,
       prefixUrl: this.baseUrl,
       headers: {
-        Authorization: `Bearer ${opts.apiKey}`,
-        'X-SDK-Version': `${version}`,
+        Authorization: `Bearer ${apiKey}`,
+        'X-SDK-Version': `${telemetry?.sdkVersions}`,
+        'X-Platform': telemetry?.platform,
+        'X-Runtime': telemetry?.runtime,
       },
+      timeout: opts?.timeout ?? 10e3,
     })
   }
 
   async createImage(
     templateId: string,
     options?: CreateOptions,
-  ) {
-    const res = this.client.get('templates/createImage', {
-      searchParams: {
-        modifications: JSON.stringify(options?.modifications ?? []),
-        container: JSON.stringify(options?.container ?? {}),
-        templateId,
-        apiKey: this.opts.apiKey,
-        format: options?.format as string,
-      },
-      timeout: options?.timeout,
-    })
-    if (options?.format === 'svg') {
-      return res.text()
+  ): Promise<Result<ArrayBuffer | string>> {
+    try {
+      const res = this.client.get('templates/createImage', {
+        json: {
+          modifications: options?.modifications ?? [],
+          container: JSON.stringify(options?.container ?? {}),
+          templateId,
+          apiKey: this.apiKey,
+          format: options?.format as string,
+        },
+      })
+      if (options?.format === 'svg') {
+        return { result: await res.text() }
+      }
+      return { result: await res.arrayBuffer() }
+    } catch (e: any) {
+      if (e instanceof HTTPError) {
+        return await e.response.json() as ErrorResponse
+      }
+      if (e instanceof TimeoutError) {
+        return timeoutError as ErrorResponse
+      }
+      throw e
     }
-    return res.arrayBuffer()
   }
 
   async createPdf(
     templateId: string,
     options?: CreateOptions,
   ) {
-    return this.client.get('templates/createPdf', {
-      searchParams: {
-        modifications: JSON.stringify(options?.modifications ?? []),
-        templateId,
-        apiKey: this.opts.apiKey,
-      },
-      timeout: options?.timeout,
-    })
-      .arrayBuffer()
+    throw new Error('Not yet implemented')
   }
 
   async createPermanentImage() {
     throw new Error('Not yet implemented')
   }
 
-  #hashText = async(text:string) => {
-    const myText = new TextEncoder().encode(text);
-    const myDigest = await crypto.subtle.digest({ name: 'SHA-256' }, myText);
-    const hashArray = Array.from(new Uint8Array(myDigest));
+  #hashText = async (text: string) => {
+    const myText = new TextEncoder().encode(text)
+    const myDigest = await crypto.subtle.digest({ name: 'SHA-256' }, myText)
+    const hashArray = Array.from(new Uint8Array(myDigest))
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
     return hashHex
   }
@@ -91,7 +98,7 @@ export class Bannerify {
     templateId: string,
     options?: CreateOptions,
   ) {
-    const apiKeyAsMd5 = await this.#hashText(this.opts.apiKey)
+    const apiKeyAsMd5 = await this.#hashText(this.apiKey)
     const searchParams = new URLSearchParams()
     searchParams.set('apiKeyMd5', apiKeyAsMd5)
     if (options?.format === 'svg') {
@@ -104,6 +111,6 @@ export class Bannerify {
     searchParams.sort()
     // TODO update to this.opts.apiKey
     searchParams.set('sign', await this.#hashText(searchParams.toString() + searchParams.get('apiKeyMd5')))
-    return `${this.baseUrl}/templates/imageSignedUrl?${searchParams.toString()}`
+    return `${this.baseUrl}/templates/signedurl?${searchParams.toString()}`
   }
 }

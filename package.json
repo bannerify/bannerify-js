@@ -3,20 +3,21 @@
   "version": "0.0.13",
   "description": "",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "bun test",
     "play": "tsx playground/test.ts",
-    "openapi": "openapi-typescript https://api-beta.bannerify.co/api/v1/openapi.json -o ./src/openapi.d.ts",
-    "openapi-local": "openapi-typescript http://localhost:5173/api/v1/openapi.json -o ./src/openapi.d.ts",
+    "openapi": "openapi-typescript https://api-beta.bannerify.co/openapi -o ./src/openapi.d.ts",
+    "openapi-local": "openapi-typescript http://127.0.0.1:5173/api/openapi -o ./src/openapi.d.ts",
     "build:watch": "tsup --watch",
     "build": "tsup"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "module": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "module": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },

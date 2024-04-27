@@ -5,7 +5,7 @@
 
 
 export interface paths {
-  "/liveness": {
+  "/v1/liveness": {
     get: {
       responses: {
         /** @description The configured services and their status */
@@ -62,12 +62,12 @@ export interface paths {
       };
     };
   };
-  "/templates/createImage": {
+  "/v1/templates/createImage": {
     get: {
       parameters: {
         query: {
           modifications?: string;
-          format: "png" | "svg";
+          format?: "png" | "svg";
           nocache?: string;
           _debug?: string;
           apiKey: string;
@@ -127,12 +127,12 @@ export interface paths {
       };
     };
   };
-  "/templates/imageSignedUrl": {
+  "/v1/templates/imageSignedUrl": {
     get: {
       parameters: {
         query: {
           modifications?: string;
-          format: "png" | "svg";
+          format?: "png" | "svg";
           nocache?: string;
           _debug?: string;
           templateId: string;
@@ -215,7 +215,7 @@ export interface components {
         message: string;
         /**
          * @description Please always include the requestId in your error report
-         * @example req_1234
+         * @example req:1234
          */
         requestId: string;
       };
@@ -237,7 +237,7 @@ export interface components {
         message: string;
         /**
          * @description Please always include the requestId in your error report
-         * @example req_1234
+         * @example req:1234
          */
         requestId: string;
       };
@@ -259,7 +259,7 @@ export interface components {
         message: string;
         /**
          * @description Please always include the requestId in your error report
-         * @example req_1234
+         * @example req:1234
          */
         requestId: string;
       };
@@ -281,7 +281,7 @@ export interface components {
         message: string;
         /**
          * @description Please always include the requestId in your error report
-         * @example req_1234
+         * @example req:1234
          */
         requestId: string;
       };
@@ -303,7 +303,7 @@ export interface components {
         message: string;
         /**
          * @description Please always include the requestId in your error report
-         * @example req_1234
+         * @example req:1234
          */
         requestId: string;
       };
@@ -325,7 +325,7 @@ export interface components {
         message: string;
         /**
          * @description Please always include the requestId in your error report
-         * @example req_1234
+         * @example req:1234
          */
         requestId: string;
       };
@@ -347,7 +347,7 @@ export interface components {
         message: string;
         /**
          * @description Please always include the requestId in your error report
-         * @example req_1234
+         * @example req:1234
          */
         requestId: string;
       };
