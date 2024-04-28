@@ -13,7 +13,7 @@ interface Options {
 
 type CreateOptions = {
   modifications?: Modification[]
-  container?: Modification
+  // template?: Modification
   // @default: png
   format?: 'svg' | 'png'
 }
@@ -54,7 +54,7 @@ export class Bannerify {
       const res = this.client.get('templates/createImage', {
         json: {
           modifications: options?.modifications ?? [],
-          container: JSON.stringify(options?.container ?? {}),
+          // template: JSON.stringify(options?.template ?? {}),
           templateId,
           apiKey: this.apiKey,
           format: options?.format as string,
