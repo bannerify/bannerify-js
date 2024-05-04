@@ -3,7 +3,7 @@
   "version": "0.0.18",
   "description": "",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -13,13 +13,6 @@
     "openapi-local": "openapi-typescript http://127.0.0.1:5173/api/openapi -o ./src/openapi.d.ts",
     "build:watch": "tsup --watch",
     "build": "tsup"
-  },
-  "exports": {
-    ".": {
-      "require": "./dist/index.cjs",
-      "module": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
   },
   "keywords": [],
   "files": [
