@@ -4,7 +4,6 @@ import { Modification } from './interface'
 import { ErrorResponse, Result, timeoutError } from './types'
 
 interface Options {
-  apiKey: string
   fetch?: typeof fetch
   baseUrl?: string
   // default 10s
@@ -15,6 +14,7 @@ type CreateOptions = {
   modifications?: Modification[]
   // template?: Modification
   // @default: png
+  nocache?: boolean
   format?: 'svg' | 'png'
 }
 
@@ -51,7 +51,7 @@ export class Bannerify {
     options?: CreateOptions,
   ): Promise<Result<ArrayBuffer | string>> {
     try {
-      const res = this.client.get('templates/createImage', {
+      const res = await this.client.post('templates/createImage', {
         json: {
           modifications: options?.modifications ?? [],
           // template: JSON.stringify(options?.template ?? {}),
@@ -106,6 +106,9 @@ export class Bannerify {
     }
     if (options?.modifications) {
       searchParams.set('modifications', JSON.stringify(options?.modifications))
+    }
+    if (options?.nocache) {
+      searchParams.set('nocache', 'true')
     }
     searchParams.set('templateId', templateId)
     searchParams.sort()

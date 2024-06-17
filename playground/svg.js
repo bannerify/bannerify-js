@@ -4,7 +4,7 @@ import * as fs from "node:fs";
 
 const client = createClient({
   apiKey: '',
-  baseUrl: 'http://localhost:8788/api/v1',
+  baseUrl: 'http://localhost:8788/v1',
 })
 
 try {

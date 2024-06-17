@@ -1,20 +1,17 @@
-import { createClient, HTTPError } from "../src"
+import { createClient } from "../src"
 import * as fs from "fs"
 
-const client = createClient({
-  apiKey: '123123',
-  baseUrl: 'http://localhost:8788/api/v1',
+const client = createClient('', {
+  baseUrl: 'http://localhost:8788/v1',
 })
 
 try {
-  const result = await client.createImage('tpl_rVbG8o2cWA', {
-    modifications: [{
-      name: 'Text',
-      text: 'Hello World',
-    }]
+  const result = await client.createImage('tpl_6UGcrEz3o3', {
+    format: 'svg',
+    modifications: []
   })
-  await fs.promises.writeFile('./playground/output/1.png', Buffer.from(result))
+  console.log(result)
+  await fs.promises.writeFile('./playground/output/1.png', Buffer.from(result.result))
 } catch (e: any) {
-  console.log(e instanceof HTTPError)
-  console.log(e.message)
+  console.log(e)
 }
