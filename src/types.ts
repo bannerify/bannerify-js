@@ -22,5 +22,5 @@ export type Result<R> =
 }
   | {
   result?: never;
-  error: ErrorResponse['error'] | typeof timeoutError;
+  error: ErrorResponse['error'] | (typeof timeoutError)['error'];
 };

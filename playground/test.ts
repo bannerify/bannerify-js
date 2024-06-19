@@ -10,6 +10,9 @@ try {
     format: 'svg',
     modifications: []
   })
+  if (result.error) {
+    console.log(result.error.message)
+  }
   console.log(result)
   await fs.promises.writeFile('./playground/output/1.png', Buffer.from(result.result))
 } catch (e: any) {

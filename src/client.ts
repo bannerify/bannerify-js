@@ -66,7 +66,7 @@ export class Bannerify {
       return { result: await res.arrayBuffer() }
     } catch (e: any) {
       if (e instanceof HTTPError) {
-        return await e.response.json() as ErrorResponse
+        return (await e.response.json())['error'] as ErrorResponse
       }
       if (e instanceof TimeoutError) {
         return timeoutError as ErrorResponse
