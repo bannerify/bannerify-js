@@ -34,7 +34,7 @@ export class Bannerify {
     const telemetry = getTelemetry()
     this.baseUrl = opts?.baseUrl || 'https://api-beta.bannerify.co/v1'
     this.client = ky.create({
-      fetch: opts?.fetch || fetch,
+      fetch: opts?.fetch || globalThis.fetch,
       prefixUrl: this.baseUrl,
       headers: {
         Authorization: `Bearer ${apiKey}`,
