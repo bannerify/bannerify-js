@@ -9,7 +9,7 @@
   "scripts": {
     "test": "bun test",
     "play": "tsx playground/test.ts",
-    "openapi": "openapi-typescript https://api-beta.bannerify.co/openapi -o ./src/openapi.d.ts",
+    "openapi": "openapi-typescript https://api.bannerify.co/openapi -o ./src/openapi.d.ts",
     "openapi-local": "openapi-typescript http://127.0.0.1:5173/api/openapi -o ./src/openapi.d.ts",
     "build:watch": "tsup --watch",
     "build": "tsup"

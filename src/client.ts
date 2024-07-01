@@ -32,7 +32,7 @@ export class Bannerify {
     private readonly opts?: Options
   ) {
     const telemetry = getTelemetry()
-    this.baseUrl = opts?.baseUrl || 'https://api-beta.bannerify.co/v1'
+    this.baseUrl = opts?.baseUrl || 'https://api.bannerify.co/v1'
     this.client = ky.create({
       fetch: opts?.fetch || globalThis.fetch.bind(globalThis),
       prefixUrl: this.baseUrl,
