@@ -1,13 +1,12 @@
 import { createClient } from '../src'
 
-const client = createClient('', {
-  // baseUrl: 'http://localhost:5173/api/v1',
+const client = createClient(process.env.API_KEY!, {
 })
 
 try {
-  const result = await client.generateImageSignedUrl('tpl_6UGcrEz3o3', {
+  const result = await client.generateImageSignedUrl('tpl_rQut9pLxKr', {
     // format: 'svg',
-    nocache: true,
+    // nocache: true,
     modifications: []
   })
   console.log(result)

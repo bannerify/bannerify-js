@@ -4,3 +4,4 @@ DS_Store
 playground/output
 dist
 examples/**/out
+.env
