@@ -11,6 +11,13 @@ export type Modification = {
    */
   color?: string
   /**
+   * star
+   * @example 5
+   * @default The default star of the layer
+   * @description The star for the modification, accept range 1-5, for example: 5, 4, 3, 2, 1.
+   */
+  star?: number
+  /**
    * background color
    * @example #FF0000
    * @default The default background color of the layer
