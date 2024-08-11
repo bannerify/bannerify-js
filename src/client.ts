@@ -98,9 +98,9 @@ export class Bannerify {
     templateId: string,
     options?: CreateOptions,
   ) {
-    const apiKeyAsMd5 = await this.#hashText(this.apiKey)
+    const apiKeyHashed = await this.#hashText(this.apiKey)
     const searchParams = new URLSearchParams()
-    searchParams.set('apiKeyMd5', apiKeyAsMd5)
+    searchParams.set('apiKeyHashed', apiKeyHashed)
     if (options?.format === 'svg') {
       searchParams.set('format', 'svg')
     }
@@ -113,7 +113,7 @@ export class Bannerify {
     searchParams.set('templateId', templateId)
     searchParams.sort()
     // TODO update to this.opts.apiKey
-    searchParams.set('sign', await this.#hashText(searchParams.toString() + searchParams.get('apiKeyMd5')))
+    searchParams.set('sign', await this.#hashText(searchParams.toString() + searchParams.get('apiKeyHashed')))
     return `${this.baseUrl}/templates/signedurl?${searchParams.toString()}`
   }
 }
