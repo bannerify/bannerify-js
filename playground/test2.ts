@@ -7,7 +7,8 @@ try {
   const result = await client.generateImageSignedUrl('tpl_rQut9pLxKr', {
     // format: 'svg',
     // nocache: true,
-    modifications: []
+    modifications: [],
+    nocache: true,
   })
   console.log(result)
 } catch (e: any) {

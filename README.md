@@ -1,3 +1,3 @@
 # Bannerify node sdk
 
-## Working in progress
+Checkout the documentation at https://bannerify.co/docs/sdk/js/overview
