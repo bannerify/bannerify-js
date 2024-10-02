@@ -14,7 +14,7 @@ try {
     console.log(result.error.message)
   }
   console.log(result)
-  await fs.promises.writeFile('./playground/output/1.png', Buffer.from(result.result))
+  await fs.promises.writeFile('./playground/output/1.png', Buffer.from(result.result as ArrayBuffer))
 } catch (e: any) {
   console.log(e)
 }

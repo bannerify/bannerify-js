@@ -77,11 +77,52 @@ export class Bannerify {
   }
 
   async createPdf(templateId: string, options?: CreateOptions) {
-    throw new Error("Not yet implemented")
+    try {
+      const res = await this.client.post("templates/createPdf", {
+        json: {
+          modifications: options?.modifications ?? [],
+          // template: JSON.stringify(options?.template ?? {}),
+          templateId,
+          apiKey: this.apiKey,
+          format: options?.format as string,
+        },
+      })
+      return { result: await res.arrayBuffer() }
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    } catch (e: any) {
+      if (e instanceof HTTPError) {
+        return (await e.response.json())["error"] as ErrorResponse
+      }
+      if (e instanceof TimeoutError) {
+        return timeoutError as ErrorResponse
+      }
+      throw e
+    }
   }
 
-  async createPermanentImage() {
-    throw new Error("Not yet implemented")
+  async createStoredImage(templateId: string, options?: CreateOptions) {
+    try {
+      const res = await this.client.post("templates/createStoredImage", {
+        json: {
+          modifications: options?.modifications ?? [],
+          // template: JSON.stringify(options?.template ?? {}),
+          templateId,
+          apiKey: this.apiKey,
+          format: options?.format as string,
+        },
+      })
+      const json = (await res.json()) as { url: string }
+      return { result: json.url }
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    } catch (e: any) {
+      if (e instanceof HTTPError) {
+        return (await e.response.json())["error"] as ErrorResponse
+      }
+      if (e instanceof TimeoutError) {
+        return timeoutError as ErrorResponse
+      }
+      throw e
+    }
   }
 
   #hashText = async (text: string) => {

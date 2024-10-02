@@ -3,7 +3,7 @@ import { paths } from './openapi'
 type codes = '400' | '401' | '403' | '404' | '500';
 
 export type ErrorResponse =
-  paths['/v1/liveness']['get']['responses'][codes]['content']['application/json'];
+  paths['/v1/templates/createImage']['post']['responses'][codes]['content']['application/json'];
 
 export const timeoutError = {
   error: {
