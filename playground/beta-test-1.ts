@@ -1,7 +1,6 @@
-import { createClient, HTTPError } from '../dist'
+import { createClient } from '../src'
 
-const client = createClient({
-  apiKey: '123123',
+const client = createClient(process.env.API_KEY!, {
   baseUrl: 'https://beta.bannerify.co/api/v1',
 })
 
