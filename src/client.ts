@@ -14,6 +14,7 @@ type CreateOptions = {
   modifications?: Modification[]
   // template?: Modification
   // @default: png
+  thumbnail?: boolean
   nocache?: boolean
   format?: "svg" | "png"
 }
@@ -42,7 +43,7 @@ export class Bannerify {
         "X-Platform": telemetry?.platform,
         "X-Runtime": telemetry?.runtime,
       },
-      timeout: opts?.timeout ?? 10e3,
+      timeout: opts?.timeout ?? 60e3,
     })
   }
 
@@ -58,8 +59,10 @@ export class Bannerify {
           templateId,
           apiKey: this.apiKey,
           format: options?.format as string,
+          thumbnail: options?.thumbnail ?? false,
         },
       })
+      // console.log(res.headers.get("x-trace-id"), res.headers.get("X-Latency"))
       if (options?.format === "svg") {
         return { result: await res.text() }
       }
@@ -109,6 +112,7 @@ export class Bannerify {
           templateId,
           apiKey: this.apiKey,
           format: options?.format as string,
+          thumbnail: options?.thumbnail ?? false,
         },
       })
       const json = (await res.json()) as { url: string }
@@ -145,6 +149,9 @@ export class Bannerify {
     }
     if (options?.nocache) {
       searchParams.set("nocache", "true")
+    }
+    if (options?.thumbnail) {
+      searchParams.set("thumbnail", "true")
     }
     searchParams.set("templateId", templateId)
     searchParams.sort()

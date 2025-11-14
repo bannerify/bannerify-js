@@ -9,9 +9,9 @@ const client = createClient(process.env.API_KEY!, {})
  */
 export default {
   async fetch(request: Request) {
-    const url = await client.generateImageSignedUrl("tpl_fHE6mpveOV", {
+    const url = await client.generateImageSignedUrl("tpl_iCvSUAtrcU", {
       // make sure every request is a unique image
-      modifications: [{ name: "Text", text: "Random text: " + crypto.randomUUID() }],
+      modifications: [{ name: "Text 2", text: "Random text: " + crypto.randomUUID() }],
     })
     // stream response to client
     return await fetch(url)

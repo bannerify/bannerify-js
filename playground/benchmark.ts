@@ -1,7 +1,9 @@
 import pMap from "p-map";
 import { createClient } from "../src"
 import fs from 'fs/promises'
-const client = createClient(process.env.API_KEY!, {})
+const client = createClient(process.env.API_KEY!, {
+  timeout: 60000,
+})
 
 let total = 0
 
@@ -14,10 +16,11 @@ const results = await pMap(
   Array.from({ length: 1000 }, (_, i) => i),
   async (i) => {
     const time = Date.now()
-    const result = await client.createImage("tpl_fHE6mpveOV", {
-      nocache: true,
+    const result = await client.createImage("tpl_iCvSUAtrcU", {
+      // nocache: true,
+      // format: 'svg',
       // modifications: [{ name: "Table", rows: [] }],
-      modifications: [{ name: "Text", text: "Hello + " + i }],
+      modifications: [{ name: "Text 3", text: "Hello + " + i }],
     })
     if (result.error) {
       console.log(result.error)
