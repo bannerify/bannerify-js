@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/v1/templates/createImage": {
     /** @description Create an image from a template */
@@ -15,409 +14,421 @@ export interface paths {
              * @default png
              * @enum {string}
              */
-            format?: "png" | "svg";
+            format?: "png" | "svg"
             /** @description Only for debug purpose, it draws bounding box for each layer */
-            _debug?: string;
-            apiKey: string;
+            _debug?: string
+            apiKey: string
             /**
              * @description Your template id
              * @example tpl_xxxxxxxxx
              */
-            templateId: string;
+            templateId: string
             /** @default [] */
-            modifications?: components["schemas"]["Modification"][];
-          };
-        };
-      };
+            modifications?: components["schemas"]["Modification"][]
+          }
+        }
+      }
       responses: {
         /** @description A image file */
         200: {
           content: {
-            "image/png": string;
-            "image/svg+xml": string;
-          };
-        };
+            "image/png": string
+            "image/svg+xml": string
+          }
+        }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
         400: {
           content: {
-            "application/json": components["schemas"]["ErrBadRequest"] | components["schemas"]["ErrFetchImageError"];
-          };
-        };
+            "application/json":
+              | components["schemas"]["ErrBadRequest"]
+              | components["schemas"]["ErrFetchImageError"]
+          }
+        }
         /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
         401: {
           content: {
-            "application/json": components["schemas"]["ErrUnauthorized"];
-          };
-        };
+            "application/json": components["schemas"]["ErrUnauthorized"]
+          }
+        }
         /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
         403: {
           content: {
-            "application/json": components["schemas"]["ErrForbidden"];
-          };
-        };
+            "application/json": components["schemas"]["ErrForbidden"]
+          }
+        }
         /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
         404: {
           content: {
-            "application/json": components["schemas"]["ErrNotFound"];
-          };
-        };
+            "application/json": components["schemas"]["ErrNotFound"]
+          }
+        }
         /** @description This response is sent when a request conflicts with the current state of the server. */
         409: {
           content: {
-            "application/json": components["schemas"]["ErrConflict"];
-          };
-        };
+            "application/json": components["schemas"]["ErrConflict"]
+          }
+        }
         /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
         429: {
           content: {
-            "application/json": components["schemas"]["ErrTooManyRequests"];
-          };
-        };
+            "application/json": components["schemas"]["ErrTooManyRequests"]
+          }
+        }
         /** @description The server has encountered a situation it does not know how to handle. */
         500: {
           content: {
-            "application/json": components["schemas"]["ErrInternalServerError"];
-          };
-        };
-      };
-    };
-  };
+            "application/json": components["schemas"]["ErrInternalServerError"]
+          }
+        }
+      }
+    }
+  }
   "/v1/templates/createPdf": {
     post: {
       requestBody: {
         content: {
           "application/json": {
-            apiKey: string;
+            apiKey: string
             /**
              * @description Your template ID
              * @example tpl_xxx
              */
-            templateId: string;
+            templateId: string
             /** @default [] */
-            modifications?: components["schemas"]["Modification"][];
-          };
-        };
-      };
+            modifications?: components["schemas"]["Modification"][]
+          }
+        }
+      }
       responses: {
         /** @description Success create pdf */
         200: {
           content: {
-            "application/pdf": string;
-          };
-        };
+            "application/pdf": string
+          }
+        }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
         400: {
           content: {
-            "application/json": components["schemas"]["ErrBadRequest"] | components["schemas"]["ErrFetchImageError"];
-          };
-        };
+            "application/json":
+              | components["schemas"]["ErrBadRequest"]
+              | components["schemas"]["ErrFetchImageError"]
+          }
+        }
         /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
         401: {
           content: {
-            "application/json": components["schemas"]["ErrUnauthorized"];
-          };
-        };
+            "application/json": components["schemas"]["ErrUnauthorized"]
+          }
+        }
         /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
         403: {
           content: {
-            "application/json": components["schemas"]["ErrForbidden"];
-          };
-        };
+            "application/json": components["schemas"]["ErrForbidden"]
+          }
+        }
         /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
         404: {
           content: {
-            "application/json": components["schemas"]["ErrNotFound"];
-          };
-        };
+            "application/json": components["schemas"]["ErrNotFound"]
+          }
+        }
         /** @description This response is sent when a request conflicts with the current state of the server. */
         409: {
           content: {
-            "application/json": components["schemas"]["ErrConflict"];
-          };
-        };
+            "application/json": components["schemas"]["ErrConflict"]
+          }
+        }
         /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
         429: {
           content: {
-            "application/json": components["schemas"]["ErrTooManyRequests"];
-          };
-        };
+            "application/json": components["schemas"]["ErrTooManyRequests"]
+          }
+        }
         /** @description The server has encountered a situation it does not know how to handle. */
         500: {
           content: {
-            "application/json": components["schemas"]["ErrInternalServerError"];
-          };
-        };
-      };
-    };
-  };
+            "application/json": components["schemas"]["ErrInternalServerError"]
+          }
+        }
+      }
+    }
+  }
   "/v1/templates/signedurl": {
     /** @description Generate a signed URL for a template */
     get: {
       parameters: {
         query: {
-          format?: "png" | "svg";
-          nocache?: string;
-          _debug?: string;
-          templateId: string;
-          apiKeyMd5?: string;
-          apiKeyHashed?: string;
-          sign: string;
-          modifications?: string;
-        };
-      };
+          format?: "png" | "svg"
+          nocache?: string
+          _debug?: string
+          templateId: string
+          apiKeyMd5?: string
+          apiKeyHashed?: string
+          sign: string
+          modifications?: string
+        }
+      }
       responses: {
         /** @description A image file */
         200: {
           content: {
-            "image/png": unknown;
-          };
-        };
+            "image/png": unknown
+          }
+        }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
         400: {
           content: {
-            "application/json": components["schemas"]["ErrBadRequest"] | components["schemas"]["ErrFetchImageError"];
-          };
-        };
+            "application/json":
+              | components["schemas"]["ErrBadRequest"]
+              | components["schemas"]["ErrFetchImageError"]
+          }
+        }
         /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
         401: {
           content: {
-            "application/json": components["schemas"]["ErrUnauthorized"];
-          };
-        };
+            "application/json": components["schemas"]["ErrUnauthorized"]
+          }
+        }
         /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
         403: {
           content: {
-            "application/json": components["schemas"]["ErrForbidden"];
-          };
-        };
+            "application/json": components["schemas"]["ErrForbidden"]
+          }
+        }
         /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
         404: {
           content: {
-            "application/json": components["schemas"]["ErrNotFound"];
-          };
-        };
+            "application/json": components["schemas"]["ErrNotFound"]
+          }
+        }
         /** @description This response is sent when a request conflicts with the current state of the server. */
         409: {
           content: {
-            "application/json": components["schemas"]["ErrConflict"];
-          };
-        };
+            "application/json": components["schemas"]["ErrConflict"]
+          }
+        }
         /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
         429: {
           content: {
-            "application/json": components["schemas"]["ErrTooManyRequests"];
-          };
-        };
+            "application/json": components["schemas"]["ErrTooManyRequests"]
+          }
+        }
         /** @description The server has encountered a situation it does not know how to handle. */
         500: {
           content: {
-            "application/json": components["schemas"]["ErrInternalServerError"];
-          };
-        };
-      };
-    };
-  };
+            "application/json": components["schemas"]["ErrInternalServerError"]
+          }
+        }
+      }
+    }
+  }
   "/v1/info": {
     /** @description Get project info */
     get: {
       parameters: {
         query: {
-          apiKey: string;
-        };
-      };
+          apiKey: string
+        }
+      }
       responses: {
         /** @description Project info */
         200: {
           content: {
             "application/json": {
-              id: string;
-              name: string;
-              createdAt: string;
-            };
-          };
-        };
+              id: string
+              name: string
+              createdAt: string
+            }
+          }
+        }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
         400: {
           content: {
-            "application/json": components["schemas"]["ErrBadRequest"] | components["schemas"]["ErrFetchImageError"];
-          };
-        };
+            "application/json":
+              | components["schemas"]["ErrBadRequest"]
+              | components["schemas"]["ErrFetchImageError"]
+          }
+        }
         /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
         401: {
           content: {
-            "application/json": components["schemas"]["ErrUnauthorized"];
-          };
-        };
+            "application/json": components["schemas"]["ErrUnauthorized"]
+          }
+        }
         /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
         403: {
           content: {
-            "application/json": components["schemas"]["ErrForbidden"];
-          };
-        };
+            "application/json": components["schemas"]["ErrForbidden"]
+          }
+        }
         /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
         404: {
           content: {
-            "application/json": components["schemas"]["ErrNotFound"];
-          };
-        };
+            "application/json": components["schemas"]["ErrNotFound"]
+          }
+        }
         /** @description This response is sent when a request conflicts with the current state of the server. */
         409: {
           content: {
-            "application/json": components["schemas"]["ErrConflict"];
-          };
-        };
+            "application/json": components["schemas"]["ErrConflict"]
+          }
+        }
         /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
         429: {
           content: {
-            "application/json": components["schemas"]["ErrTooManyRequests"];
-          };
-        };
+            "application/json": components["schemas"]["ErrTooManyRequests"]
+          }
+        }
         /** @description The server has encountered a situation it does not know how to handle. */
         500: {
           content: {
-            "application/json": components["schemas"]["ErrInternalServerError"];
-          };
-        };
-      };
-    };
-  };
+            "application/json": components["schemas"]["ErrInternalServerError"]
+          }
+        }
+      }
+    }
+  }
   "/v1/templates": {
     /** @description List templates */
     get: {
       parameters: {
         query: {
-          apiKey: string;
-          includeLayers?: string;
-        };
-      };
+          apiKey: string
+          includeLayers?: string
+        }
+      }
       responses: {
         /** @description A list of templates */
         200: {
           content: {
-            "application/json": unknown[];
-          };
-        };
+            "application/json": unknown[]
+          }
+        }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
         400: {
           content: {
-            "application/json": components["schemas"]["ErrBadRequest"] | components["schemas"]["ErrFetchImageError"];
-          };
-        };
+            "application/json":
+              | components["schemas"]["ErrBadRequest"]
+              | components["schemas"]["ErrFetchImageError"]
+          }
+        }
         /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
         401: {
           content: {
-            "application/json": components["schemas"]["ErrUnauthorized"];
-          };
-        };
+            "application/json": components["schemas"]["ErrUnauthorized"]
+          }
+        }
         /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
         403: {
           content: {
-            "application/json": components["schemas"]["ErrForbidden"];
-          };
-        };
+            "application/json": components["schemas"]["ErrForbidden"]
+          }
+        }
         /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
         404: {
           content: {
-            "application/json": components["schemas"]["ErrNotFound"];
-          };
-        };
+            "application/json": components["schemas"]["ErrNotFound"]
+          }
+        }
         /** @description This response is sent when a request conflicts with the current state of the server. */
         409: {
           content: {
-            "application/json": components["schemas"]["ErrConflict"];
-          };
-        };
+            "application/json": components["schemas"]["ErrConflict"]
+          }
+        }
         /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
         429: {
           content: {
-            "application/json": components["schemas"]["ErrTooManyRequests"];
-          };
-        };
+            "application/json": components["schemas"]["ErrTooManyRequests"]
+          }
+        }
         /** @description The server has encountered a situation it does not know how to handle. */
         500: {
           content: {
-            "application/json": components["schemas"]["ErrInternalServerError"];
-          };
-        };
-      };
-    };
-  };
+            "application/json": components["schemas"]["ErrInternalServerError"]
+          }
+        }
+      }
+    }
+  }
   "/v1/templates/:id": {
     /** @description Template details */
     get: {
       parameters: {
         query: {
-          apiKey: string;
-        };
-      };
+          apiKey: string
+        }
+      }
       responses: {
         /** @description Template details */
         200: {
           content: {
             "application/json": {
               /** @description The name of the template */
-              name: string;
+              name: string
               /** @description The id of the template */
-              id: string;
+              id: string
               /** @description The layers of the template */
-              layers: ({
-                  /** @description The name of the layer */
-                  name: string;
-                  /** @description The id of the layer */
-                  id: string;
-                  /** @description The type of the layer */
-                  type: string;
-                  /** @description The suggest input of the layer */
-                  suggestInput: string | null;
-                })[];
-            };
-          };
-        };
+              layers: {
+                /** @description The name of the layer */
+                name: string
+                /** @description The id of the layer */
+                id: string
+                /** @description The type of the layer */
+                type: string
+                /** @description The suggest input of the layer */
+                suggestInput: string | null
+              }[]
+            }
+          }
+        }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
         400: {
           content: {
-            "application/json": components["schemas"]["ErrBadRequest"] | components["schemas"]["ErrFetchImageError"];
-          };
-        };
+            "application/json":
+              | components["schemas"]["ErrBadRequest"]
+              | components["schemas"]["ErrFetchImageError"]
+          }
+        }
         /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
         401: {
           content: {
-            "application/json": components["schemas"]["ErrUnauthorized"];
-          };
-        };
+            "application/json": components["schemas"]["ErrUnauthorized"]
+          }
+        }
         /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
         403: {
           content: {
-            "application/json": components["schemas"]["ErrForbidden"];
-          };
-        };
+            "application/json": components["schemas"]["ErrForbidden"]
+          }
+        }
         /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
         404: {
           content: {
-            "application/json": components["schemas"]["ErrNotFound"];
-          };
-        };
+            "application/json": components["schemas"]["ErrNotFound"]
+          }
+        }
         /** @description This response is sent when a request conflicts with the current state of the server. */
         409: {
           content: {
-            "application/json": components["schemas"]["ErrConflict"];
-          };
-        };
+            "application/json": components["schemas"]["ErrConflict"]
+          }
+        }
         /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
         429: {
           content: {
-            "application/json": components["schemas"]["ErrTooManyRequests"];
-          };
-        };
+            "application/json": components["schemas"]["ErrTooManyRequests"]
+          }
+        }
         /** @description The server has encountered a situation it does not know how to handle. */
         500: {
           content: {
-            "application/json": components["schemas"]["ErrInternalServerError"];
-          };
-        };
-      };
-    };
-  };
+            "application/json": components["schemas"]["ErrInternalServerError"]
+          }
+        }
+      }
+    }
+  }
   "/v1/templates/createStoredImage": {
     /** @description Create an image from a template */
     post: {
@@ -428,77 +439,79 @@ export interface paths {
              * @default png
              * @enum {string}
              */
-            format?: "png" | "svg";
+            format?: "png" | "svg"
             /** @description Only for debug purpose, it draws bounding box for each layer */
-            _debug?: string;
-            apiKey: string;
+            _debug?: string
+            apiKey: string
             /**
              * @description Your template id
              * @example tpl_xxxxxxxxx
              */
-            templateId: string;
+            templateId: string
             /** @default [] */
-            modifications?: components["schemas"]["Modification"][];
-          };
-        };
-      };
+            modifications?: components["schemas"]["Modification"][]
+          }
+        }
+      }
       responses: {
         /** @description Image object */
         200: {
           content: {
             "application/json": {
-              url: string;
-            };
-          };
-        };
+              url: string
+            }
+          }
+        }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
         400: {
           content: {
-            "application/json": components["schemas"]["ErrBadRequest"] | components["schemas"]["ErrFetchImageError"];
-          };
-        };
+            "application/json":
+              | components["schemas"]["ErrBadRequest"]
+              | components["schemas"]["ErrFetchImageError"]
+          }
+        }
         /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
         401: {
           content: {
-            "application/json": components["schemas"]["ErrUnauthorized"];
-          };
-        };
+            "application/json": components["schemas"]["ErrUnauthorized"]
+          }
+        }
         /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
         403: {
           content: {
-            "application/json": components["schemas"]["ErrForbidden"];
-          };
-        };
+            "application/json": components["schemas"]["ErrForbidden"]
+          }
+        }
         /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
         404: {
           content: {
-            "application/json": components["schemas"]["ErrNotFound"];
-          };
-        };
+            "application/json": components["schemas"]["ErrNotFound"]
+          }
+        }
         /** @description This response is sent when a request conflicts with the current state of the server. */
         409: {
           content: {
-            "application/json": components["schemas"]["ErrConflict"];
-          };
-        };
+            "application/json": components["schemas"]["ErrConflict"]
+          }
+        }
         /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
         429: {
           content: {
-            "application/json": components["schemas"]["ErrTooManyRequests"];
-          };
-        };
+            "application/json": components["schemas"]["ErrTooManyRequests"]
+          }
+        }
         /** @description The server has encountered a situation it does not know how to handle. */
         500: {
           content: {
-            "application/json": components["schemas"]["ErrInternalServerError"];
-          };
-        };
-      };
-    };
-  };
+            "application/json": components["schemas"]["ErrInternalServerError"]
+          }
+        }
+      }
+    }
+  }
 }
 
-export type webhooks = Record<string, never>;
+export type webhooks = Record<string, never>
 
 export interface components {
   schemas: {
@@ -509,21 +522,21 @@ export interface components {
          * @example BAD_REQUEST
          * @enum {string}
          */
-        code: "BAD_REQUEST";
+        code: "BAD_REQUEST"
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://bannerify.co/docs/api-reference/errors/code/BAD_REQUEST
          */
-        docs: string;
+        docs: string
         /** @description A human readable explanation of what went wrong */
-        message: string;
+        message: string
         /**
          * @description Please always include the requestId in your error report
          * @example req:1234
          */
-        requestId: string;
-      };
-    };
+        requestId: string
+      }
+    }
     ErrFetchImageError: {
       error: {
         /**
@@ -531,21 +544,21 @@ export interface components {
          * @example FETCH_IMAGE_ERROR
          * @enum {string}
          */
-        code: "FETCH_IMAGE_ERROR";
+        code: "FETCH_IMAGE_ERROR"
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://bannerify.co/docs/api-reference/errors/code/FETCH_IMAGE_ERROR
          */
-        docs: string;
+        docs: string
         /** @description A human readable explanation of what went wrong */
-        message: string;
+        message: string
         /**
          * @description Please always include the requestId in your error report
          * @example req:1234
          */
-        requestId: string;
-      };
-    };
+        requestId: string
+      }
+    }
     ErrUnauthorized: {
       error: {
         /**
@@ -553,21 +566,21 @@ export interface components {
          * @example UNAUTHORIZED
          * @enum {string}
          */
-        code: "UNAUTHORIZED";
+        code: "UNAUTHORIZED"
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://bannerify.co/docs/api-reference/errors/code/UNAUTHORIZED
          */
-        docs: string;
+        docs: string
         /** @description A human readable explanation of what went wrong */
-        message: string;
+        message: string
         /**
          * @description Please always include the requestId in your error report
          * @example req:1234
          */
-        requestId: string;
-      };
-    };
+        requestId: string
+      }
+    }
     ErrForbidden: {
       error: {
         /**
@@ -575,21 +588,21 @@ export interface components {
          * @example FORBIDDEN
          * @enum {string}
          */
-        code: "FORBIDDEN";
+        code: "FORBIDDEN"
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://bannerify.co/docs/api-reference/errors/code/FORBIDDEN
          */
-        docs: string;
+        docs: string
         /** @description A human readable explanation of what went wrong */
-        message: string;
+        message: string
         /**
          * @description Please always include the requestId in your error report
          * @example req:1234
          */
-        requestId: string;
-      };
-    };
+        requestId: string
+      }
+    }
     ErrNotFound: {
       error: {
         /**
@@ -597,21 +610,21 @@ export interface components {
          * @example NOT_FOUND
          * @enum {string}
          */
-        code: "NOT_FOUND";
+        code: "NOT_FOUND"
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://bannerify.co/docs/api-reference/errors/code/NOT_FOUND
          */
-        docs: string;
+        docs: string
         /** @description A human readable explanation of what went wrong */
-        message: string;
+        message: string
         /**
          * @description Please always include the requestId in your error report
          * @example req:1234
          */
-        requestId: string;
-      };
-    };
+        requestId: string
+      }
+    }
     ErrConflict: {
       error: {
         /**
@@ -619,21 +632,21 @@ export interface components {
          * @example CONFLICT
          * @enum {string}
          */
-        code: "CONFLICT";
+        code: "CONFLICT"
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://bannerify.co/docs/api-reference/errors/code/CONFLICT
          */
-        docs: string;
+        docs: string
         /** @description A human readable explanation of what went wrong */
-        message: string;
+        message: string
         /**
          * @description Please always include the requestId in your error report
          * @example req:1234
          */
-        requestId: string;
-      };
-    };
+        requestId: string
+      }
+    }
     ErrTooManyRequests: {
       error: {
         /**
@@ -641,21 +654,21 @@ export interface components {
          * @example TOO_MANY_REQUESTS
          * @enum {string}
          */
-        code: "TOO_MANY_REQUESTS";
+        code: "TOO_MANY_REQUESTS"
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://bannerify.co/docs/api-reference/errors/code/TOO_MANY_REQUESTS
          */
-        docs: string;
+        docs: string
         /** @description A human readable explanation of what went wrong */
-        message: string;
+        message: string
         /**
          * @description Please always include the requestId in your error report
          * @example req:1234
          */
-        requestId: string;
-      };
-    };
+        requestId: string
+      }
+    }
     ErrInternalServerError: {
       error: {
         /**
@@ -663,101 +676,100 @@ export interface components {
          * @example INTERNAL_SERVER_ERROR
          * @enum {string}
          */
-        code: "INTERNAL_SERVER_ERROR";
+        code: "INTERNAL_SERVER_ERROR"
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://bannerify.co/docs/api-reference/errors/code/INTERNAL_SERVER_ERROR
          */
-        docs: string;
+        docs: string
         /** @description A human readable explanation of what went wrong */
-        message: string;
+        message: string
         /**
          * @description Please always include the requestId in your error report
          * @example req:1234
          */
-        requestId: string;
-      };
-    };
+        requestId: string
+      }
+    }
     /** @description A modification (aka override) to apply to the layer in image */
     Modification: {
       /**
        * @description The layer name of the modification
        * @example Text 1
        */
-      name: string;
+      name: string
       /**
        * @description The color for the modification
        * @example #FF0000
        */
-      color?: string;
+      color?: string
       /**
        * @description The source image for the modification
        * @example https://example.com/image.jpg
        */
-      src?: string;
+      src?: string
       /**
        * @description You can modify the text layer with this field
        * @example Hello World
        */
-      text?: string;
+      text?: string
       /**
        * @description Modify the barcode layer content with this field
        * @example 1234567890
        */
-      barcode?: string;
+      barcode?: string
       /**
        * @description Modify the qrcode layer content with this field
        * @example Some text
        */
-      qrcode?: string;
+      qrcode?: string
       /** @description Update chart layer's data, follow chart.js data structure */
       chart?: {
-        [key: string]: unknown;
-      };
+        [key: string]: unknown
+      }
       /**
        * @description Set the visibility of the field
        * @example true
        */
-      visible?: boolean;
+      visible?: boolean
       /**
        * @description Star value
        * @example 5
        */
-      star?: number;
+      star?: number
       /**
        * @description Table width mode
        * @example adaptive
        * @enum {string}
        */
-      widthMode?: "standard" | "adaptive";
+      widthMode?: "standard" | "adaptive"
       /**
        * @description Table height mode
        * @example adaptive
        * @enum {string}
        */
-      heightMode?: "standard" | "adaptive";
+      heightMode?: "standard" | "adaptive"
       /**
        * @description Table theme
        * @example NONE
        * @enum {string}
        */
-      theme?: "NONE" | "DEFAULT" | "BRIGHT" | "SIMPLIFY" | "ARCO";
+      theme?: "NONE" | "DEFAULT" | "BRIGHT" | "SIMPLIFY" | "ARCO"
       /** @description Table rows */
-      rows?: unknown[];
+      rows?: unknown[]
       /** @description Table columns */
-      columns?: string[];
-    };
-  };
-  responses: never;
-  parameters: {
-  };
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+      columns?: string[]
+    }
+  }
+  responses: never
+  parameters: {}
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
 
-export type $defs = Record<string, never>;
+export type $defs = Record<string, never>
 
-export type external = Record<string, never>;
+export type external = Record<string, never>
 
-export type operations = Record<string, never>;
+export type operations = Record<string, never>

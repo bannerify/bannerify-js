@@ -8,39 +8,41 @@ try {
     modifications: [
       {
         name: "Table",
-        rows:[
+        rows: [
           {
             "Order ID": "CA-2018-156720",
             "Customer ID": "JM-15580",
             "Product Name": "Bagged Rubber Bands",
-            "Sales": "3.123",
-            "Profit": "-0.605"
+            Sales: "3.123",
+            Profit: "-0.605",
           },
           {
             "Order ID": "CA-2018-115427",
             "Customer ID": "EB-13975",
             "Product Name": "GBC Binding covers",
-            "Sales": "20.72",
-            "Profit": "6.475"
+            Sales: "20.72",
+            Profit: "6.475",
           },
           {
             "Order ID": "CA-2018-115427",
             "Customer ID": "EB-13975",
             "Product Name": "GBC Binding covers",
-            "Sales": "20.72",
-            "Profit": "6.475"
-          },{
+            Sales: "20.72",
+            Profit: "6.475",
+          },
+          {
             "Order ID": "CA-2018-115427",
             "Customer ID": "EB-13975",
             "Product Name": "GBC Binding covers",
-            "Sales": "20.72",
-            "Profit": "6.475"
-          },{
+            Sales: "20.72",
+            Profit: "6.475",
+          },
+          {
             "Order ID": "My new id 1234",
             "Customer ID": "EB-13975",
             "Product Name": "GBC Binding covers",
-            "Sales": "20.72",
-            "Profit": "6.475"
+            Sales: "20.72",
+            Profit: "6.475",
           },
         ],
       },

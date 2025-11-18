@@ -1,19 +1,18 @@
-import {createClient, HTTPError} from "../dist/index.js"
+import { createClient, HTTPError } from "../dist/index.js"
 
 const client = createClient({
-  apiKey: '123123',
+  apiKey: "123123",
   // baseUrl: 'http://localhost:8788/api/v1',
 })
 
-
 console.log(
-  client.generateImageSignedUrl('tpl_jNvsOYr0cr', {
+  client.generateImageSignedUrl("tpl_jNvsOYr0cr", {
     modifications: [
       {
-        name: 'Description',
-        text: 'hello world 123'
+        name: "Description",
+        text: "hello world 123",
       },
     ],
-    format: 'svg'
-  })
+    format: "svg",
+  }),
 )

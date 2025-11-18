@@ -1,10 +1,9 @@
-import { createClient } from '../src'
+import { createClient } from "../src"
 
-const client = createClient(process.env.API_KEY!, {
-})
+const client = createClient(process.env.API_KEY!, {})
 
 try {
-  const result = await client.generateImageSignedUrl('tpl_wmU8ENz8QD', {
+  const result = await client.generateImageSignedUrl("tpl_wmU8ENz8QD", {
     // format: 'svg',
     nocache: true,
     modifications: [],

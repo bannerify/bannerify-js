@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "jsx": "react-jsxdev",
-    "lib": [
-      "esnext",
-      "dom",
-      "webworker"
-    ],
+    "lib": ["esnext", "dom", "webworker"],
     "types": ["bun-types"],
     "module": "esnext",
     "moduleResolution": "node",

@@ -16,9 +16,7 @@
     "up": "bun run build && npm version patch --no-git-tag-version && npm publish"
   },
   "keywords": [],
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "author": "Duc An <an@bannerify.co>",
   "license": "ISC",
   "devDependencies": {

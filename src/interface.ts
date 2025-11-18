@@ -1,7 +1,9 @@
 import type { ChartData } from "chart.js"
 import type { paths } from "./openapi"
 
-export type Modification = NonNullable<paths["/v1/templates/createImage"]["post"]["requestBody"]["content"]["application/json"]["modifications"]>[0] & {
+export type Modification = NonNullable<
+  paths["/v1/templates/createImage"]["post"]["requestBody"]["content"]["application/json"]["modifications"]
+>[0] & {
   // layer name
   name: string
   /**
