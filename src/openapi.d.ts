@@ -14,7 +14,7 @@ export interface paths {
              * @default png
              * @enum {string}
              */
-            format?: "png" | "svg"
+            format?: "png" | "jpeg" | "webp"
             /** @description Only for debug purpose, it draws bounding box for each layer */
             _debug?: string
             apiKey: string
@@ -33,7 +33,6 @@ export interface paths {
         200: {
           content: {
             "image/png": string
-            "image/svg+xml": string
           }
         }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
@@ -158,7 +157,7 @@ export interface paths {
     get: {
       parameters: {
         query: {
-          format?: "png" | "svg"
+          format?: "png" | "jpeg" | "webp"
           nocache?: string
           _debug?: string
           templateId: string
@@ -439,7 +438,7 @@ export interface paths {
              * @default png
              * @enum {string}
              */
-            format?: "png" | "svg"
+            format?: "png" | "jpeg" | "webp"
             /** @description Only for debug purpose, it draws bounding box for each layer */
             _debug?: string
             apiKey: string

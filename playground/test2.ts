@@ -4,7 +4,7 @@ const client = createClient(process.env.API_KEY!, {})
 
 try {
   const result = await client.generateImageSignedUrl("tpl_wmU8ENz8QD", {
-    // format: 'svg',
+    // format: "jpeg",
     nocache: true,
     modifications: [],
   })

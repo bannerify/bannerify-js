@@ -13,6 +13,6 @@ console.log(
         text: "hello world 123",
       },
     ],
-    format: "svg",
+    format: "webp",
   }),
 )

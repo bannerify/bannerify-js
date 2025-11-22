@@ -3,6 +3,42 @@ import { getTelemetry } from "./telemetry"
 import type { Modification, S3Config } from "./interface"
 import { type ErrorResponse, type Result, timeoutError } from "./types"
 
+const SUPPORTED_FORMATS = ["png", "jpeg", "webp"] as const
+
+type ImageFormat = (typeof SUPPORTED_FORMATS)[number]
+
+type NormalizedFormat =
+  | {
+      ok: true
+      format: ImageFormat
+    }
+  | {
+      ok: false
+    }
+
+const isSupportedFormat = (value: string): value is ImageFormat =>
+  (SUPPORTED_FORMATS as readonly string[]).includes(value)
+
+const normalizeFormat = (value?: string): NormalizedFormat => {
+  if (!value) {
+    return { ok: true, format: "png" }
+  }
+  if (isSupportedFormat(value)) {
+    return { ok: true, format: value }
+  }
+  return { ok: false }
+}
+
+const invalidFormatResult = <T>(value?: string): Result<T> => ({
+  error: {
+    // @ts-ignore – local validation error
+    code: "INVALID_FORMAT",
+    docs: "https://bannerify.co/docs",
+    message: `Unsupported format "${value ?? "undefined"}". Valid formats are png, jpeg, or webp.`,
+    requestId: "local",
+  },
+})
+
 interface Options {
   fetch?: typeof fetch
   baseUrl?: string
@@ -16,7 +52,7 @@ type CreateOptions = {
   // @default: png
   thumbnail?: boolean
   nocache?: boolean
-  format?: "svg" | "png"
+  format?: ImageFormat
 }
 
 type CreateStoredImageOptions = CreateOptions & {
@@ -53,20 +89,20 @@ export class Bannerify {
 
   async createImage(templateId: string, options?: CreateOptions) {
     try {
+      const normalizedFormat = normalizeFormat(options?.format)
+      if (!normalizedFormat.ok) {
+        return invalidFormatResult(options?.format)
+      }
       const res = await this.client.post("templates/createImage", {
         json: {
           modifications: options?.modifications ?? [],
           // template: JSON.stringify(options?.template ?? {}),
           templateId,
           apiKey: this.apiKey,
-          format: options?.format as string,
+          format: normalizedFormat.format,
           thumbnail: options?.thumbnail ?? false,
         },
       })
-      // console.log(res.headers.get("x-trace-id"), res.headers.get("X-Latency"))
-      if (options?.format === "svg") {
-        return { result: await res.text() }
-      }
       return { result: await res.arrayBuffer() }
     } catch (e: any) {
       if (e instanceof HTTPError) {
@@ -88,7 +124,6 @@ export class Bannerify {
           // template: JSON.stringify(options?.template ?? {}),
           templateId,
           apiKey: this.apiKey,
-          format: options?.format as string,
         },
       })
       return { result: await res.arrayBuffer() }
@@ -107,13 +142,17 @@ export class Bannerify {
 
   async createStoredImage(templateId: string, options?: CreateStoredImageOptions) {
     try {
+      const normalizedFormat = normalizeFormat(options?.format)
+      if (!normalizedFormat.ok) {
+        return invalidFormatResult(options?.format)
+      }
       const res = await this.client.post("templates/createStoredImage", {
         json: {
           modifications: options?.modifications ?? [],
           // template: JSON.stringify(options?.template ?? {}),
           templateId,
           apiKey: this.apiKey,
-          format: options?.format as string,
+          format: normalizedFormat.format,
           thumbnail: options?.thumbnail ?? false,
           s3Config: options?.s3Config,
         },
@@ -145,8 +184,14 @@ export class Bannerify {
     const apiKeyHashed = await this.#hashText(this.apiKey)
     const searchParams = new URLSearchParams()
     searchParams.set("apiKeyHashed", apiKeyHashed)
-    if (options?.format === "svg") {
-      searchParams.set("format", "svg")
+    if (options?.format) {
+      const normalizedFormat = normalizeFormat(options.format)
+      if (!normalizedFormat.ok) {
+        throw new Error(
+          `Unsupported format "${options.format}". Valid formats are png, jpeg, or webp.`,
+        )
+      }
+      searchParams.set("format", normalizedFormat.format)
     }
     if (options?.modifications) {
       searchParams.set("modifications", JSON.stringify(options?.modifications))

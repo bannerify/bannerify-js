@@ -7,7 +7,6 @@ const client = createClient("", {
 
 try {
   const result = await client.createImage("tpl_6UGcrEz3o3", {
-    format: "svg",
     modifications: [],
   })
   if (result.error) {

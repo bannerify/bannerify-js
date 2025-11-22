@@ -17,7 +17,7 @@ const results = await pMap(
     const time = Date.now()
     const result = await client.createImage("tpl_iCvSUAtrcU", {
       // nocache: true,
-      // format: 'svg',
+      // format: "webp",
       // modifications: [{ name: "Table", rows: [] }],
       modifications: [{ name: "Text 3", text: "Hello + " + i }],
     })

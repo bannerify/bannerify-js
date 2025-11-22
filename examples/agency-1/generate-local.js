@@ -21,6 +21,8 @@ const result = await client.createImage("tpl_c7GYzx389W", {
       text: faker.lorem.sentences(4),
     },
   ],
-  format: "svg",
+  format: "webp",
 })
+
 console.log(result)
+
