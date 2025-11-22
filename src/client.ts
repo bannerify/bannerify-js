@@ -1,6 +1,6 @@
 import ky, { HTTPError, TimeoutError } from "ky"
 import { getTelemetry } from "./telemetry"
-import type { Modification } from "./interface"
+import type { Modification, S3Config } from "./interface"
 import { type ErrorResponse, type Result, timeoutError } from "./types"
 
 interface Options {
@@ -17,6 +17,10 @@ type CreateOptions = {
   thumbnail?: boolean
   nocache?: boolean
   format?: "svg" | "png"
+}
+
+type CreateStoredImageOptions = CreateOptions & {
+  s3Config?: S3Config
 }
 
 export function createClient(apiKey: string, opts?: Options) {
@@ -47,10 +51,7 @@ export class Bannerify {
     })
   }
 
-  async createImage(
-    templateId: string,
-    options?: CreateOptions,
-  ): Promise<Result<ArrayBuffer | string>> {
+  async createImage(templateId: string, options?: CreateOptions) {
     try {
       const res = await this.client.post("templates/createImage", {
         json: {
@@ -67,13 +68,13 @@ export class Bannerify {
         return { result: await res.text() }
       }
       return { result: await res.arrayBuffer() }
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } catch (e: any) {
       if (e instanceof HTTPError) {
-        return (await e.response.json())["error"] as ErrorResponse
+        const json = await e.response.json()
+        return { error: json.error }
       }
       if (e instanceof TimeoutError) {
-        return timeoutError as ErrorResponse
+        return { error: timeoutError.error }
       }
       throw e
     }
@@ -94,16 +95,17 @@ export class Bannerify {
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } catch (e: any) {
       if (e instanceof HTTPError) {
-        return (await e.response.json())["error"] as ErrorResponse
+        const json = await e.response.json()
+        return { error: json.error }
       }
       if (e instanceof TimeoutError) {
-        return timeoutError as ErrorResponse
+        return { error: timeoutError.error }
       }
       throw e
     }
   }
 
-  async createStoredImage(templateId: string, options?: CreateOptions) {
+  async createStoredImage(templateId: string, options?: CreateStoredImageOptions) {
     try {
       const res = await this.client.post("templates/createStoredImage", {
         json: {
@@ -113,6 +115,7 @@ export class Bannerify {
           apiKey: this.apiKey,
           format: options?.format as string,
           thumbnail: options?.thumbnail ?? false,
+          s3Config: options?.s3Config,
         },
       })
       const json = (await res.json()) as { url: string }
@@ -120,10 +123,11 @@ export class Bannerify {
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } catch (e: any) {
       if (e instanceof HTTPError) {
-        return (await e.response.json())["error"] as ErrorResponse
+        const json = await e.response.json()
+        return { error: json.error }
       }
       if (e instanceof TimeoutError) {
-        return timeoutError as ErrorResponse
+        return { error: timeoutError.error }
       }
       throw e
     }

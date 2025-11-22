@@ -1,6 +1,18 @@
 import type { ChartData } from "chart.js"
 import type { paths } from "./openapi"
 
+export type S3Config = {
+  endPoint: string
+  port?: number
+  useSSL?: boolean
+  region: string
+  bucket: string
+  pathStyle?: boolean
+  accessKey: string
+  secretKey: string
+  customUrl?: string
+}
+
 export type Modification = NonNullable<
   paths["/v1/templates/createImage"]["post"]["requestBody"]["content"]["application/json"]["modifications"]
 >[0] & {
