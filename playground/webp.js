@@ -11,14 +11,10 @@ try {
     format: "webp",
   })
   console.log(result)
-  await fs.promises.writeFile(
-    "playground/output/sample.webp",
-    Buffer.from(result.result ?? result),
-  )
+  await fs.promises.writeFile("playground/output/sample.webp", Buffer.from(result.result ?? result))
 } catch (e) {
   console.error(e)
   if (e?.response) {
     console.error(await e.response.text())
   }
 }
-

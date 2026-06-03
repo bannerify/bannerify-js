@@ -25,4 +25,3 @@ const result = await client.createImage("tpl_c7GYzx389W", {
 })
 
 console.log(result)
-

@@ -2,6 +2,12 @@
   "name": "bannerify-js",
   "version": "0.0.28",
   "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "Duc An <an@bannerify.co>",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -15,10 +21,6 @@
     "build": "tsup",
     "up": "bun run build && npm version patch --no-git-tag-version && npm publish"
   },
-  "keywords": [],
-  "files": ["dist"],
-  "author": "Duc An <an@bannerify.co>",
-  "license": "ISC",
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@types/node": "18.15.3",
