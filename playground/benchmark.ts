@@ -29,7 +29,7 @@ const results = await pMap(
     try {
       await fs.writeFile(
         `./playground/output/benchmark-${i % 10}.png`,
-        Buffer.from(result.result as ArrayBuffer),
+        Buffer.from((result as any).result as ArrayBuffer) as any,
       )
     } catch (e) {
       console.log(e, result)
