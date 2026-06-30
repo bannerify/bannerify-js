@@ -1,33 +1,8 @@
 import ky, { HTTPError, TimeoutError } from "ky"
 import { getTelemetry } from "./telemetry"
 import type { Modification, S3Config } from "./interface"
+import { validateImageFormat, type ImageFormat } from "./format"
 import { type ErrorResponse, type Result, timeoutError } from "./types"
-
-const SUPPORTED_FORMATS = ["png", "jpeg", "webp"] as const
-
-type ImageFormat = (typeof SUPPORTED_FORMATS)[number]
-
-type NormalizedFormat =
-  | {
-      ok: true
-      format: ImageFormat
-    }
-  | {
-      ok: false
-    }
-
-const isSupportedFormat = (value: string): value is ImageFormat =>
-  (SUPPORTED_FORMATS as readonly string[]).includes(value)
-
-const normalizeFormat = (value?: string): NormalizedFormat => {
-  if (!value) {
-    return { ok: true, format: "png" }
-  }
-  if (isSupportedFormat(value)) {
-    return { ok: true, format: value }
-  }
-  return { ok: false }
-}
 
 const invalidFormatResult = <T>(value?: string): Result<T> => ({
   error: {
@@ -89,7 +64,7 @@ export class Bannerify {
 
   async createImage(templateId: string, options?: CreateOptions) {
     try {
-      const normalizedFormat = normalizeFormat(options?.format)
+      const normalizedFormat = validateImageFormat(options?.format)
       if (!normalizedFormat.ok) {
         return invalidFormatResult(options?.format)
       }
@@ -142,7 +117,7 @@ export class Bannerify {
 
   async createStoredImage(templateId: string, options?: CreateStoredImageOptions) {
     try {
-      const normalizedFormat = normalizeFormat(options?.format)
+      const normalizedFormat = validateImageFormat(options?.format)
       if (!normalizedFormat.ok) {
         return invalidFormatResult(options?.format)
       }
@@ -185,11 +160,9 @@ export class Bannerify {
     const searchParams = new URLSearchParams()
     searchParams.set("apiKeyHashed", apiKeyHashed)
     if (options?.format) {
-      const normalizedFormat = normalizeFormat(options.format)
+      const normalizedFormat = validateImageFormat(options.format)
       if (!normalizedFormat.ok) {
-        throw new Error(
-          `Unsupported format "${options.format}". Valid formats are png, jpeg, or webp.`,
-        )
+        throw new Error(normalizedFormat.error.message)
       }
       searchParams.set("format", normalizedFormat.format)
     }
