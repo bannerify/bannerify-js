@@ -28,6 +28,8 @@ type CreateOptions = {
   thumbnail?: boolean
   nocache?: boolean
   format?: ImageFormat
+  // Encoder quality for the lossy formats (jpeg, webp). 1-100, defaults to 90.
+  quality?: number
 }
 
 type CreateStoredImageOptions = CreateOptions & {
@@ -62,7 +64,7 @@ export class Bannerify {
     })
   }
 
-  async createImage(templateId: string, options?: CreateOptions) {
+  async createImage(templateId: string, options?: CreateOptions): Promise<Result<ArrayBuffer>> {
     try {
       const normalizedFormat = validateImageFormat(options?.format)
       if (!normalizedFormat.ok) {
@@ -91,7 +93,7 @@ export class Bannerify {
     }
   }
 
-  async createPdf(templateId: string, options?: CreateOptions) {
+  async createPdf(templateId: string, options?: CreateOptions): Promise<Result<ArrayBuffer>> {
     try {
       const res = await this.client.post("templates/createPdf", {
         json: {
@@ -115,7 +117,10 @@ export class Bannerify {
     }
   }
 
-  async createStoredImage(templateId: string, options?: CreateStoredImageOptions) {
+  async createStoredImage(
+    templateId: string,
+    options?: CreateStoredImageOptions,
+  ): Promise<Result<string>> {
     try {
       const normalizedFormat = validateImageFormat(options?.format)
       if (!normalizedFormat.ok) {
@@ -155,6 +160,23 @@ export class Bannerify {
     return hashHex
   }
 
+  // The signature is an HMAC keyed with the API key itself, so a signed URL can
+  // be shared without exposing anything that can sign a different one. The
+  // apiKeyHashed in the URL only tells the server which key to verify with.
+  #signText = async (text: string) => {
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(this.apiKey),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"],
+    )
+    const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(text))
+    return Array.from(new Uint8Array(signature))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+  }
+
   async generateImageSignedUrl(templateId: string, options?: CreateOptions) {
     const apiKeyHashed = await this.#hashText(this.apiKey)
     const searchParams = new URLSearchParams()
@@ -165,6 +187,9 @@ export class Bannerify {
         throw new Error(normalizedFormat.error.message)
       }
       searchParams.set("format", normalizedFormat.format)
+    }
+    if (options?.quality !== undefined) {
+      searchParams.set("quality", String(options.quality))
     }
     if (options?.modifications) {
       searchParams.set("modifications", JSON.stringify(options?.modifications))
@@ -177,11 +202,7 @@ export class Bannerify {
     }
     searchParams.set("templateId", templateId)
     searchParams.sort()
-    // TODO update to this.opts.apiKey
-    searchParams.set(
-      "sign",
-      await this.#hashText(searchParams.toString() + searchParams.get("apiKeyHashed")),
-    )
+    searchParams.set("sign", await this.#signText(searchParams.toString()))
     return `${this.baseUrl}/templates/signedurl?${searchParams.toString()}`
   }
 }
