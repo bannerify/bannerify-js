@@ -1,5 +1,5 @@
 import { createClient, HTTPError } from "bannerify-node"
-import * as fs from "fs"
+import * as fs from "node:fs"
 
 const client = createClient({
   apiKey: "123123",

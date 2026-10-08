@@ -1,5 +1,5 @@
 import { createClient } from "../src"
-import * as fs from "fs"
+import * as fs from "node:fs"
 
 const client = createClient("", {
   baseUrl: "http://localhost:8788/v1",

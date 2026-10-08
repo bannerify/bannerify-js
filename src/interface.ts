@@ -1,5 +1,4 @@
-import type { ChartData } from "chart.js"
-import type { paths } from "./openapi"
+import type { components } from "./openapi"
 
 export type S3Config = {
   endPoint: string
@@ -13,9 +12,7 @@ export type S3Config = {
   customUrl?: string
 }
 
-export type Modification = NonNullable<
-  paths["/v1/templates/createImage"]["post"]["requestBody"]["content"]["application/json"]["modifications"]
->[0] & {
+export type Modification = components["schemas"]["Modification"] & {
   // layer name
   name: string
   /**
@@ -54,12 +51,33 @@ export type Modification = NonNullable<
    */
   src?: string
   /**
-   * chart data
-   * @example { labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'], datasets: [{ label: 'My First Dataset', data: [65, 59, 80, 81, 56, 55, 40], fill: false, borderColor: 'rgb(75, 192, 192)', tension: 0.1 }] }
-   * @default The default chart data of the layer
-   * @description Update chart layer's data, follow chart.js data structure
+   * rows
+   * @example [{ label: 'Jan', value: 22 }, { label: 'Feb', value: 30 }]
+   * @default The default rows of the layer
+   * @description The rows of a data layer. A table takes row objects keyed by the column names, a chart takes { label, value } points, and a key value layer takes { key, value } entries.
    */
-  chart?: ChartData
+  rows?: Record<string, unknown>[]
+  /**
+   * columns
+   * @example ["Item", "Qty", "Total"]
+   * @default The default columns of the layer
+   * @description The column names of a table layer
+   */
+  columns?: string[]
+  /**
+   * title
+   * @example Payment terms
+   * @default The default title of the layer
+   * @description The heading of an alert layer, or the job title of a signature layer
+   */
+  title?: string
+  /**
+   * date
+   * @example 2026-01-31
+   * @default The default date of the layer
+   * @description The date of a signature layer
+   */
+  date?: string
   /**
    * text content
    * @example Hello World

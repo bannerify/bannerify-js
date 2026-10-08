@@ -16,15 +16,74 @@ export interface paths {
              */
             format?: "png" | "jpeg" | "webp"
             /** @description Only for debug purpose, it draws bounding box for each layer */
-            _debug?: string
+            _debug?: boolean | string
+            /** @description Optional custom S3 configuration. If provided, the generated file will be stored in your S3-compatible storage instead of the default Bannerify storage. */
+            s3Config?: {
+              /**
+               * @description S3 endpoint URL (without protocol)
+               * @example s3.amazonaws.com
+               */
+              endPoint: string
+              /**
+               * @description S3 endpoint port
+               * @default 443
+               * @example 443
+               */
+              port?: number
+              /**
+               * @description Whether to use SSL/TLS
+               * @default true
+               * @example true
+               */
+              useSSL?: boolean
+              /**
+               * @description S3 region
+               * @example us-east-1
+               */
+              region: string
+              /**
+               * @description S3 bucket name
+               * @example my-images-bucket
+               */
+              bucket: string
+              /**
+               * @description Whether to use path-style URLs
+               * @default false
+               * @example false
+               */
+              pathStyle?: boolean
+              /** @description S3 access key */
+              accessKey: string
+              /** @description S3 secret key */
+              secretKey: string
+              /**
+               * @description Custom URL template for accessing uploaded files. Use {key} as placeholder for the file key.
+               * @example https://cdn.example.com/{key}
+               */
+              customUrl?: string
+            }
             apiKey: string
             /**
              * @description Your template id
              * @example tpl_xxxxxxxxx
              */
             templateId: string
-            /** @default [] */
-            modifications?: components["schemas"]["Modification"][]
+            /**
+             * @description Template modifications as the API array format, an object shorthand, or a JSON string. Object values map to text by default, while nested objects keep fields such as src, qrcode, rows, or columns.
+             * @default []
+             * @example {
+             *   "headline": "Summer sale",
+             *   "photo": {
+             *     "src": "https://example.com/photo.png"
+             *   }
+             * }
+             */
+            modifications?: unknown
+            /**
+             * @description Generate thumbnail preview (non-billable)
+             * @default false
+             */
+            thumbnail?: boolean | string
           }
         }
       }
@@ -93,8 +152,17 @@ export interface paths {
              * @example tpl_xxx
              */
             templateId: string
-            /** @default [] */
-            modifications?: components["schemas"]["Modification"][]
+            /**
+             * @description Template modifications as the API array format, an object shorthand, or a JSON string. Object values map to text by default, while nested objects keep fields such as src, qrcode, rows, or columns.
+             * @default []
+             * @example {
+             *   "headline": "Summer sale",
+             *   "photo": {
+             *     "src": "https://example.com/photo.png"
+             *   }
+             * }
+             */
+            modifications?: unknown
           }
         }
       }
@@ -158,20 +226,76 @@ export interface paths {
       parameters: {
         query: {
           format?: "png" | "jpeg" | "webp"
-          nocache?: string
-          _debug?: string
+          /** @description By default, we cache the image in the CDN for 1 day to save your bandwidth, use this field to disable cache so you can get the latest image */
+          nocache?: boolean | string
+          /** @description Only for debug purpose, it draws bounding box for each layer */
+          _debug?: boolean | string
+          /** @description Optional custom S3 configuration. If provided, the generated file will be stored in your S3-compatible storage instead of the default Bannerify storage. */
+          s3Config?: {
+            /**
+             * @description S3 endpoint URL (without protocol)
+             * @example s3.amazonaws.com
+             */
+            endPoint: string
+            /**
+             * @description S3 endpoint port
+             * @default 443
+             * @example 443
+             */
+            port?: number
+            /**
+             * @description Whether to use SSL/TLS
+             * @default true
+             * @example true
+             */
+            useSSL?: boolean
+            /**
+             * @description S3 region
+             * @example us-east-1
+             */
+            region: string
+            /**
+             * @description S3 bucket name
+             * @example my-images-bucket
+             */
+            bucket: string
+            /**
+             * @description Whether to use path-style URLs
+             * @default false
+             * @example false
+             */
+            pathStyle?: boolean
+            /** @description S3 access key */
+            accessKey: string
+            /** @description S3 secret key */
+            secretKey: string
+            /**
+             * @description Custom URL template for accessing uploaded files. Use {key} as placeholder for the file key.
+             * @example https://cdn.example.com/{key}
+             */
+            customUrl?: string
+          }
+          /** @description Your template id */
           templateId: string
+          /** @description Deprecated alias of apiKeyHashed */
           apiKeyMd5?: string
+          /** @description SHA-256 hash of the API key, it identifies which key signed the URL */
           apiKeyHashed?: string
+          /** @description HMAC-SHA256 of the sorted query params, keyed with the API key, read more at https://bannerify.co/docs/api-reference/endpoint/signed-url */
           sign: string
-          modifications?: string
+          /** @description Template modifications as the API array format, an object shorthand, or a JSON string. Object values map to text by default, while nested objects keep fields such as src, qrcode, rows, or columns. */
+          modifications?: unknown
+          /** @description Generate thumbnail preview (low-quality, non-billable) */
+          thumbnail?: boolean | string
         }
       }
       responses: {
         /** @description A image file */
         200: {
           content: {
-            "image/png": unknown
+            "image/png": string
+            "image/jpeg": string
+            "image/webp": string
           }
         }
         /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
@@ -226,6 +350,7 @@ export interface paths {
     get: {
       parameters: {
         query: {
+          /** @description The api key to use for this request */
           apiKey: string
         }
       }
@@ -292,8 +417,10 @@ export interface paths {
     get: {
       parameters: {
         query: {
+          /** @description The api key to use for this request */
           apiKey: string
-          includeLayers?: string
+          /** @description Whether to include layers in the response */
+          includeLayers?: boolean | string
         }
       }
       responses: {
@@ -355,6 +482,7 @@ export interface paths {
     get: {
       parameters: {
         query: {
+          /** @description The api key to use for this request */
           apiKey: string
         }
       }
@@ -440,15 +568,69 @@ export interface paths {
              */
             format?: "png" | "jpeg" | "webp"
             /** @description Only for debug purpose, it draws bounding box for each layer */
-            _debug?: string
+            _debug?: boolean | string
+            /** @description Optional custom S3 configuration. If provided, the generated file will be stored in your S3-compatible storage instead of the default Bannerify storage. */
+            s3Config?: {
+              /**
+               * @description S3 endpoint URL (without protocol)
+               * @example s3.amazonaws.com
+               */
+              endPoint: string
+              /**
+               * @description S3 endpoint port
+               * @default 443
+               * @example 443
+               */
+              port?: number
+              /**
+               * @description Whether to use SSL/TLS
+               * @default true
+               * @example true
+               */
+              useSSL?: boolean
+              /**
+               * @description S3 region
+               * @example us-east-1
+               */
+              region: string
+              /**
+               * @description S3 bucket name
+               * @example my-images-bucket
+               */
+              bucket: string
+              /**
+               * @description Whether to use path-style URLs
+               * @default false
+               * @example false
+               */
+              pathStyle?: boolean
+              /** @description S3 access key */
+              accessKey: string
+              /** @description S3 secret key */
+              secretKey: string
+              /**
+               * @description Custom URL template for accessing uploaded files. Use {key} as placeholder for the file key.
+               * @example https://cdn.example.com/{key}
+               */
+              customUrl?: string
+            }
             apiKey: string
             /**
              * @description Your template id
              * @example tpl_xxxxxxxxx
              */
             templateId: string
-            /** @default [] */
-            modifications?: components["schemas"]["Modification"][]
+            /**
+             * @description Template modifications as the API array format, an object shorthand, or a JSON string. Object values map to text by default, while nested objects keep fields such as src, qrcode, rows, or columns.
+             * @default []
+             * @example {
+             *   "headline": "Summer sale",
+             *   "photo": {
+             *     "src": "https://example.com/photo.png"
+             *   }
+             * }
+             */
+            modifications?: unknown
           }
         }
       }
@@ -457,6 +639,134 @@ export interface paths {
         200: {
           content: {
             "application/json": {
+              url: string
+            }
+          }
+        }
+        /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
+        400: {
+          content: {
+            "application/json":
+              | components["schemas"]["ErrBadRequest"]
+              | components["schemas"]["ErrFetchImageError"]
+          }
+        }
+        /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["ErrUnauthorized"]
+          }
+        }
+        /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
+        403: {
+          content: {
+            "application/json": components["schemas"]["ErrForbidden"]
+          }
+        }
+        /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["ErrNotFound"]
+          }
+        }
+        /** @description This response is sent when a request conflicts with the current state of the server. */
+        409: {
+          content: {
+            "application/json": components["schemas"]["ErrConflict"]
+          }
+        }
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
+        429: {
+          content: {
+            "application/json": components["schemas"]["ErrTooManyRequests"]
+          }
+        }
+        /** @description The server has encountered a situation it does not know how to handle. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["ErrInternalServerError"]
+          }
+        }
+      }
+    }
+  }
+  "/v1/templates/createStoredPdf": {
+    /** @description Create a PDF from a template and store it in Bannerify storage */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            apiKey: string
+            /**
+             * @description Your template id
+             * @example tpl_xxxxxxxxx
+             */
+            templateId: string
+            /**
+             * @description Template modifications as the API array format, an object shorthand, or a JSON string. Object values map to text by default, while nested objects keep fields such as src, qrcode, rows, or columns.
+             * @default []
+             * @example {
+             *   "headline": "Summer sale",
+             *   "photo": {
+             *     "src": "https://example.com/photo.png"
+             *   }
+             * }
+             */
+            modifications?: unknown
+            /** @description Custom S3 configuration for storing generated files in your own S3-compatible storage */
+            s3Config?: {
+              /**
+               * @description S3 endpoint URL (without protocol)
+               * @example s3.amazonaws.com
+               */
+              endPoint: string
+              /**
+               * @description S3 endpoint port
+               * @default 443
+               * @example 443
+               */
+              port?: number
+              /**
+               * @description Whether to use SSL/TLS
+               * @default true
+               * @example true
+               */
+              useSSL?: boolean
+              /**
+               * @description S3 region
+               * @example us-east-1
+               */
+              region: string
+              /**
+               * @description S3 bucket name
+               * @example my-images-bucket
+               */
+              bucket: string
+              /**
+               * @description Whether to use path-style URLs
+               * @default false
+               * @example false
+               */
+              pathStyle?: boolean
+              /** @description S3 access key */
+              accessKey: string
+              /** @description S3 secret key */
+              secretKey: string
+              /**
+               * @description Custom URL template for accessing uploaded files. Use {key} as placeholder for the file key.
+               * @example https://cdn.example.com/{key}
+               */
+              customUrl?: string
+            }
+          }
+        }
+      }
+      responses: {
+        /** @description Stored PDF object */
+        200: {
+          content: {
+            "application/json": {
+              /** @description Public URL of the generated PDF */
               url: string
             }
           }
@@ -722,10 +1032,6 @@ export interface components {
        * @example Some text
        */
       qrcode?: string
-      /** @description Update chart layer's data, follow chart.js data structure */
-      chart?: {
-        [key: string]: unknown
-      }
       /**
        * @description Set the visibility of the field
        * @example true
@@ -737,27 +1043,34 @@ export interface components {
        */
       star?: number
       /**
-       * @description Table width mode
-       * @example adaptive
-       * @enum {string}
+       * @description The rows of a data layer. A table takes row objects keyed by the column names, a chart takes { label, value } points, and a key value layer takes { key, value } entries.
+       * @example [
+       *   {
+       *     "label": "Jan",
+       *     "value": 22
+       *   }
+       * ]
        */
-      widthMode?: "standard" | "adaptive"
-      /**
-       * @description Table height mode
-       * @example adaptive
-       * @enum {string}
-       */
-      heightMode?: "standard" | "adaptive"
-      /**
-       * @description Table theme
-       * @example NONE
-       * @enum {string}
-       */
-      theme?: "NONE" | "DEFAULT" | "BRIGHT" | "SIMPLIFY" | "ARCO"
-      /** @description Table rows */
       rows?: unknown[]
-      /** @description Table columns */
+      /**
+       * @description The column names of a table layer
+       * @example [
+       *   "Item",
+       *   "Qty",
+       *   "Total"
+       * ]
+       */
       columns?: string[]
+      /**
+       * @description The heading of an alert layer, or the job title of a signature layer
+       * @example Payment terms
+       */
+      title?: string
+      /**
+       * @description The date of a signature layer
+       * @example 2026-01-31
+       */
+      date?: string
     }
   }
   responses: never

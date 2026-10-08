@@ -1,7 +1,7 @@
 import { createClient } from "../src"
 
 const client = createClient(process.env.API_KEY!, {
-  baseUrl: "https://beta.bannerify.co/api/v1",
+  baseUrl: "https://api-beta.bannerify.co/v1",
 })
 
 console.log(

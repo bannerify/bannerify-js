@@ -1,6 +1,6 @@
 import pMap from "p-map"
 import { createClient } from "../src"
-import fs from "fs/promises"
+import fs from "node:fs/promises"
 const client = createClient(process.env.API_KEY!, {
   timeout: 60000,
 })
