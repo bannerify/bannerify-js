@@ -24,9 +24,8 @@ interface Options {
 type CreateOptions = {
   modifications?: Modification[]
   // template?: Modification
-  // @default: png
-  thumbnail?: boolean
   nocache?: boolean
+  // @default: png
   format?: ImageFormat
   // Encoder quality for the lossy formats (jpeg, webp). 1-100, defaults to 90.
   quality?: number
@@ -77,7 +76,6 @@ export class Bannerify {
           templateId,
           apiKey: this.apiKey,
           format: normalizedFormat.format,
-          thumbnail: options?.thumbnail ?? false,
         },
       })
       return { result: await res.arrayBuffer() }
@@ -133,7 +131,6 @@ export class Bannerify {
           templateId,
           apiKey: this.apiKey,
           format: normalizedFormat.format,
-          thumbnail: options?.thumbnail ?? false,
           s3Config: options?.s3Config,
         },
       })
@@ -196,9 +193,6 @@ export class Bannerify {
     }
     if (options?.nocache) {
       searchParams.set("nocache", "true")
-    }
-    if (options?.thumbnail) {
-      searchParams.set("thumbnail", "true")
     }
     searchParams.set("templateId", templateId)
     searchParams.sort()

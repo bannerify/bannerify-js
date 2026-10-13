@@ -1,0 +1,103 @@
+{
+  "apiKey": "test-key",
+  "baseUrl": "https://api.example.test/v1",
+  "encoded": [
+    {
+      "input": "tpl_xxx",
+      "encoded": "tpl_xxx"
+    },
+    {
+      "input": "plain",
+      "encoded": "plain"
+    },
+    {
+      "input": "hello world",
+      "encoded": "hello+world"
+    },
+    {
+      "input": "a*b",
+      "encoded": "a*b"
+    },
+    {
+      "input": "a~b",
+      "encoded": "a%7Eb"
+    },
+    {
+      "input": "a-b_c.d",
+      "encoded": "a-b_c.d"
+    },
+    {
+      "input": "!'()",
+      "encoded": "%21%27%28%29"
+    },
+    {
+      "input": "&=+",
+      "encoded": "%26%3D%2B"
+    },
+    {
+      "input": "100% sure",
+      "encoded": "100%25+sure"
+    },
+    {
+      "input": "a/b?c#d",
+      "encoded": "a%2Fb%3Fc%23d"
+    },
+    {
+      "input": "caf\u00e9",
+      "encoded": "caf%C3%A9"
+    },
+    {
+      "input": "\u65e5\u672c\u8a9e",
+      "encoded": "%E6%97%A5%E6%9C%AC%E8%AA%9E"
+    },
+    {
+      "input": "emoji \ud83d\ude00",
+      "encoded": "emoji+%F0%9F%98%80"
+    },
+    {
+      "input": "line\nbreak\ttab",
+      "encoded": "line%0Abreak%09tab"
+    },
+    {
+      "input": "[]{}\"\\",
+      "encoded": "%5B%5D%7B%7D%22%5C"
+    },
+    {
+      "input": "@:,;$",
+      "encoded": "%40%3A%2C%3B%24"
+    },
+    {
+      "input": "*~ !'()",
+      "encoded": "*%7E+%21%27%28%29"
+    },
+    {
+      "input": "%2A %7E",
+      "encoded": "%252A+%257E"
+    },
+    {
+      "input": "\u00a0",
+      "encoded": "%C2%A0"
+    }
+  ],
+  "golden": [
+    {
+      "name": "format and modifications with special characters",
+      "templateId": "tpl_golden",
+      "format": "webp",
+      "modifications": [
+        {
+          "name": "title",
+          "text": "Sale! 50% off * today ~ now (limited)"
+        }
+      ],
+      "url": "https://api.example.test/v1/templates/signedurl?apiKeyHashed=62af8704764faf8ea82fc61ce9c4c3908b6cb97d463a634e9e587d7c885db0ef&format=webp&modifications=%5B%7B%22name%22%3A%22title%22%2C%22text%22%3A%22Sale%21+50%25+off+*+today+%7E+now+%28limited%29%22%7D%5D&templateId=tpl_golden&sign=33bd6be62921a99369fa8736b32f0a61c0743b03ce7b45d87c86c80cdedf1ba2"
+    },
+    {
+      "name": "png only",
+      "templateId": "tpl_golden",
+      "format": "png",
+      "modifications": null,
+      "url": "https://api.example.test/v1/templates/signedurl?apiKeyHashed=62af8704764faf8ea82fc61ce9c4c3908b6cb97d463a634e9e587d7c885db0ef&format=png&templateId=tpl_golden&sign=b29d89cda8f6246e3a2433067c17976e9fd262a9422978530ac04578680469e7"
+    }
+  ]
+}

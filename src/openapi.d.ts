@@ -79,11 +79,6 @@ export interface paths {
              * }
              */
             modifications?: unknown
-            /**
-             * @description Generate thumbnail preview (non-billable)
-             * @default false
-             */
-            thumbnail?: boolean | string
           }
         }
       }
@@ -285,8 +280,6 @@ export interface paths {
           sign: string
           /** @description Template modifications as the API array format, an object shorthand, or a JSON string. Object values map to text by default, while nested objects keep fields such as src, qrcode, rows, or columns. */
           modifications?: unknown
-          /** @description Generate thumbnail preview (low-quality, non-billable) */
-          thumbnail?: boolean | string
         }
       }
       responses: {
