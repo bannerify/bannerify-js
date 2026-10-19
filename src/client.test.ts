@@ -53,3 +53,83 @@ describe("createImage", () => {
     expect(Object.keys(body).sort()).toEqual(["apiKey", "format", "modifications", "templateId"])
   })
 })
+
+describe("renderVideo", () => {
+  const sse = (events: { type: string }[]) =>
+    new Response(
+      events.map((event) => `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`).join(""),
+      { headers: { "Content-Type": "text/event-stream" } },
+    )
+
+  const clientAnswering = (answer: () => Response, requests: Request[] = []) =>
+    new Bannerify(vectors.apiKey, {
+      baseUrl: vectors.baseUrl,
+      fetch: (async (input: Request | URL | string, init?: RequestInit) => {
+        requests.push(input instanceof Request ? input : new Request(input, init))
+        return answer()
+      }) as typeof fetch,
+    })
+
+  const done = { type: "done", url: "https://images.bannerify.co/files/a.mp4" }
+
+  test("streams the events of the render", async () => {
+    const requests: Request[] = []
+    const bannerify = clientAnswering(
+      () =>
+        sse([
+          { type: "queued", ahead: 1 },
+          { type: "progress", frame: 30, totalFrames: 60, progress: 0.5 },
+          done,
+        ] as { type: string }[]),
+      requests,
+    )
+
+    const events = []
+    for await (const event of await bannerify.renderVideo("tpl_x", {
+      modifications: [{ name: "Title", text: "Hi" }],
+    })) {
+      events.push(event)
+    }
+
+    expect(events.map((event) => event.type)).toEqual(["queued", "progress", "done"])
+    expect(new URL(requests[0]!.url).pathname).toBe("/v1/templates/renderVideo")
+    expect(new URL(requests[0]!.url).searchParams.get("stream")).toBe("true")
+    expect(await requests[0]!.json<unknown>()).toEqual({
+      modifications: [{ name: "Title", text: "Hi" }],
+      templateId: "tpl_x",
+      apiKey: vectors.apiKey,
+    })
+  })
+
+  test("turns a refused request into one error event", async () => {
+    const error = {
+      code: "PRECONDITION_FAILED",
+      message: "Video rendering is not available yet.",
+      docs: "",
+      requestId: "req_1",
+    }
+    const bannerify = clientAnswering(() => Response.json({ error }, { status: 412 }))
+
+    const events = []
+    for await (const event of await bannerify.renderVideo("tpl_x")) events.push(event)
+
+    expect(events).toEqual([{ type: "error", error } as never])
+  })
+
+  test("renderAndWaitVideo answers the URL of the video, or the error", async () => {
+    const waited = await clientAnswering(() =>
+      sse([{ type: "queued", ahead: 0 } as { type: string }, done]),
+    ).renderAndWaitVideo("tpl_x")
+    expect(waited).toEqual({ result: done.url })
+
+    const error = {
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Could not download a clip.",
+      requestId: "req_2",
+    }
+    const failed = await clientAnswering(() =>
+      sse([{ type: "error", error } as { type: string }]),
+    ).renderAndWaitVideo("tpl_x")
+    expect(failed).toEqual({ error } as never)
+  })
+})

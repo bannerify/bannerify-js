@@ -35,6 +35,46 @@ type CreateStoredImageOptions = CreateOptions & {
   s3Config?: S3Config
 }
 
+type RenderVideoOptions = {
+  modifications?: Modification[]
+}
+
+/**
+ * An event of `renderVideo`. A render waits in line (`queued`, with the renders before it), renders
+ * its frames (`progress`, from 0 to 1), and ends with `done` and the URL of the MP4, or `error`.
+ */
+export type RenderVideoEvent =
+  | { type: "queued"; ahead: number }
+  | { type: "progress"; frame: number; totalFrames: number; progress: number }
+  | { type: "done"; url: string }
+  | { type: "error"; error: ErrorResponse["error"] | (typeof timeoutError)["error"] }
+
+/** The JSON of each `data` field of a server-sent event stream. */
+async function* readEvents(body: ReadableStream<Uint8Array>): AsyncGenerator<RenderVideoEvent> {
+  const reader = body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ""
+  for (let read = await reader.read(); !read.done; read = await reader.read()) {
+    buffer += decoder.decode(read.value, { stream: true })
+    let end = buffer.indexOf("\n\n")
+    while (end !== -1) {
+      const data = buffer
+        .slice(0, end)
+        .split("\n")
+        .filter((line) => line.startsWith("data:"))
+        .map((line) => line.slice(5).trimStart())
+        .join("\n")
+      buffer = buffer.slice(end + 2)
+      if (data) yield JSON.parse(data) as RenderVideoEvent
+      end = buffer.indexOf("\n\n")
+    }
+  }
+}
+
+async function* single(event: RenderVideoEvent): AsyncGenerator<RenderVideoEvent> {
+  yield event
+}
+
 export function createClient(apiKey: string, opts?: Options) {
   return new Bannerify(apiKey, opts)
 }
@@ -147,6 +187,56 @@ export class Bannerify {
       }
       throw e
     }
+  }
+
+  /**
+   * Renders a video template, and streams its events:
+   *
+   *   for await (const event of await bannerify.renderVideo("tpl_xxx")) {
+   *     if (event.type === "progress") console.log(Math.round(event.progress * 100))
+   *     if (event.type === "done") console.log(event.url)
+   *   }
+   *
+   * The last event is `done` or `error`. Each second of the video counts as one generation.
+   */
+  async renderVideo(
+    templateId: string,
+    options?: RenderVideoOptions,
+  ): Promise<AsyncGenerator<RenderVideoEvent>> {
+    try {
+      const res = await this.client.post("templates/renderVideo", {
+        searchParams: { stream: "true" },
+        json: {
+          modifications: options?.modifications ?? [],
+          templateId,
+          apiKey: this.apiKey,
+        },
+        headers: { Accept: "text/event-stream" },
+      })
+      if (!res.body) return single({ type: "error", error: timeoutError.error })
+      return readEvents(res.body)
+    } catch (e) {
+      if (e instanceof HTTPError) {
+        const json = await e.response.json()
+        return single({ type: "error", error: json.error })
+      }
+      if (e instanceof TimeoutError) {
+        return single({ type: "error", error: timeoutError.error })
+      }
+      throw e
+    }
+  }
+
+  /** Renders a video template, and answers the URL of the MP4 once it is stored. */
+  async renderAndWaitVideo(
+    templateId: string,
+    options?: RenderVideoOptions,
+  ): Promise<Result<string>> {
+    for await (const event of await this.renderVideo(templateId, options)) {
+      if (event.type === "done") return { result: event.url }
+      if (event.type === "error") return { error: event.error }
+    }
+    return { error: { ...timeoutError.error, message: "The render ended without a video" } }
   }
 
   #hashText = async (text: string) => {
