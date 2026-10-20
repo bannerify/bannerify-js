@@ -197,7 +197,7 @@ export class Bannerify {
    *     if (event.type === "done") console.log(event.url)
    *   }
    *
-   * The last event is `done` or `error`. Each second of the video counts as one generation.
+   * The last event is `done` or `error`. Each second of the video counts as one generation, and as two at 60 fps.
    */
   async renderVideo(
     templateId: string,
