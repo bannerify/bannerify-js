@@ -116,6 +116,76 @@ describe("renderVideo", () => {
     expect(events).toEqual([{ type: "error", error } as never])
   })
 
+  /** A stream that sends `events`, then drops like a lost connection. */
+  const droppedAfter = (events: { type: string }[]) => {
+    const chunks = events.map((event) =>
+      new TextEncoder().encode(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`),
+    )
+    return new Response(
+      new ReadableStream({
+        pull(controller) {
+          const chunk = chunks.shift()
+          if (chunk) controller.enqueue(chunk)
+          else controller.error(new TypeError("network connection was lost"))
+        },
+      }),
+      { headers: { "Content-Type": "text/event-stream" } },
+    )
+  }
+
+  test("reads the same video again by its id when the stream drops", async () => {
+    const requests: Request[] = []
+    const answers = [
+      () => droppedAfter([{ type: "created", id: "vid_1" }, { type: "queued", ahead: 0 }]),
+      () => sse([{ type: "progress", frame: 60, totalFrames: 60, progress: 1 }, done]),
+    ]
+    const bannerify = clientAnswering(() => answers.shift()!(), requests)
+
+    const events = []
+    for await (const event of await bannerify.renderVideo("tpl_x")) events.push(event)
+
+    expect(events.map((event) => event.type)).toEqual(["created", "queued", "progress", "done"])
+    expect(requests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).toEqual(
+      ["POST /v1/templates/renderVideo", "GET /v1/videos/vid_1"],
+    )
+    expect(new URL(requests[1]!.url).searchParams.get("stream")).toBe("true")
+  })
+
+  test("does not send the render again when it fails before the video has an id", async () => {
+    const requests: Request[] = []
+    const error = { code: "INTERNAL_SERVER_ERROR", message: "Refused.", docs: "", requestId: "r" }
+    const bannerify = clientAnswering(() => Response.json({ error }, { status: 500 }), requests)
+
+    const events = []
+    for await (const event of await bannerify.renderVideo("tpl_x")) events.push(event)
+
+    expect(events).toEqual([{ type: "error", error } as never])
+    expect(requests).toHaveLength(1)
+  })
+
+  test("createVideo answers the id of the video at once", async () => {
+    const requests: Request[] = []
+    const bannerify = clientAnswering(
+      () => Response.json({ id: "vid_1", status: "queued" }, { status: 202 }),
+      requests,
+    )
+
+    expect(await bannerify.createVideo("tpl_x")).toEqual({
+      result: { id: "vid_1", status: "queued" },
+    })
+    expect(new URL(requests[0]!.url).searchParams.get("wait")).toBe("false")
+  })
+
+  test("getVideo answers the status and the URL of a video", async () => {
+    const requests: Request[] = []
+    const video = { id: "vid_1", status: "done", url: done.url }
+    const bannerify = clientAnswering(() => Response.json(video), requests)
+
+    expect(await bannerify.getVideo("vid_1")).toEqual({ result: video } as never)
+    expect(new URL(requests[0]!.url).pathname).toBe("/v1/videos/vid_1")
+    expect(new URL(requests[0]!.url).searchParams.get("apiKey")).toBe(vectors.apiKey)
+  })
+
   test("renderAndWaitVideo answers the URL of the video, or the error", async () => {
     const waited = await clientAnswering(() =>
       sse([{ type: "queued", ahead: 0 } as { type: string }, done]),

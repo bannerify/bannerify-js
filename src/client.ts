@@ -40,10 +40,12 @@ type RenderVideoOptions = {
 }
 
 /**
- * An event of `renderVideo`. A render waits in line (`queued`, with the renders before it), renders
- * its frames (`progress`, from 0 to 1), and ends with `done` and the URL of the MP4, or `error`.
+ * An event of `renderVideo`. A video gets its id (`created`), waits in line (`queued`, with the
+ * renders before it), renders its frames (`progress`, from 0 to 1), and ends with `done` and the
+ * URL of the MP4, or `error`.
  */
 export type RenderVideoEvent =
+  | { type: "created"; id: string }
   | { type: "queued"; ahead: number }
   | { type: "progress"; frame: number; totalFrames: number; progress: number }
   | { type: "done"; url: string }
@@ -71,9 +73,33 @@ async function* readEvents(body: ReadableStream<Uint8Array>): AsyncGenerator<Ren
   }
 }
 
-async function* single(event: RenderVideoEvent): AsyncGenerator<RenderVideoEvent> {
-  yield event
+/** A video of `renderVideo`, read again with `getVideo`. */
+export type Video = {
+  id: string
+  status: "queued" | "rendering" | "done" | "failed"
+  /** The URL of the MP4, once the video is `done`. */
+  url?: string
+  /** Why the video `failed`. */
+  error?: string
 }
+
+/** What opening a stream of video events gives: its body, a last event, or nothing to try again. */
+type OpenedEvents = { body: ReadableStream<Uint8Array> } | { event: RenderVideoEvent } | null
+
+/** The waits before each new read of a video whose stream dropped. */
+const RECONNECT_DELAYS_MS = [1000, 2000, 4000, 8000]
+
+const connectionLost = (id?: string): RenderVideoEvent => ({
+  type: "error",
+  error: {
+    ...timeoutError.error,
+    message: id
+      ? `Lost the connection to the video ${id}. Read it again with getVideo.`
+      : "Lost the connection before the video got an id.",
+  },
+})
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export function createClient(apiKey: string, opts?: Options) {
   return new Bannerify(apiKey, opts)
@@ -203,27 +229,141 @@ export class Bannerify {
     templateId: string,
     options?: RenderVideoOptions,
   ): Promise<AsyncGenerator<RenderVideoEvent>> {
+    return this.#followVideo(() =>
+      this.#openEvents(() =>
+        this.client.post("templates/renderVideo", {
+          searchParams: { stream: "true" },
+          json: {
+            modifications: options?.modifications ?? [],
+            templateId,
+            apiKey: this.apiKey,
+          },
+          headers: { Accept: "text/event-stream" },
+          retry: 0,
+        }),
+        false,
+      ),
+    )
+  }
+
+  /**
+   * Starts a video and answers its id at once, without waiting for the render. Read the video later
+   * with `getVideo` or `watchVideo`.
+   */
+  async createVideo(
+    templateId: string,
+    options?: RenderVideoOptions,
+  ): Promise<Result<{ id: string; status: "queued" }>> {
     try {
-      const res = await this.client.post("templates/renderVideo", {
-        searchParams: { stream: "true" },
-        json: {
-          modifications: options?.modifications ?? [],
-          templateId,
-          apiKey: this.apiKey,
-        },
-        headers: { Accept: "text/event-stream" },
-      })
-      if (!res.body) return single({ type: "error", error: timeoutError.error })
-      return readEvents(res.body)
+      const result = await this.client
+        .post("templates/renderVideo", {
+          searchParams: { wait: "false" },
+          json: { modifications: options?.modifications ?? [], templateId, apiKey: this.apiKey },
+          retry: 0,
+        })
+        .json<{ id: string; status: "queued" }>()
+      return { result }
     } catch (e) {
       if (e instanceof HTTPError) {
         const json = await e.response.json()
-        return single({ type: "error", error: json.error })
+        return { error: json.error }
       }
       if (e instanceof TimeoutError) {
-        return single({ type: "error", error: timeoutError.error })
+        return { error: timeoutError.error }
       }
       throw e
+    }
+  }
+
+  /** Streams the events of the video `id` again, from its latest one, as `renderVideo` does. */
+  async watchVideo(id: string): Promise<AsyncGenerator<RenderVideoEvent>> {
+    return this.#followVideo(() => this.#openVideoEvents(id), id)
+  }
+
+  /** Reads the status of the video `id`, and its URL once it is done. */
+  async getVideo(id: string): Promise<Result<Video>> {
+    try {
+      const result = await this.client
+        .get(`videos/${encodeURIComponent(id)}`, { searchParams: { apiKey: this.apiKey } })
+        .json<Video>()
+      return { result }
+    } catch (e) {
+      if (e instanceof HTTPError) {
+        const json = await e.response.json()
+        return { error: json.error }
+      }
+      if (e instanceof TimeoutError) {
+        return { error: timeoutError.error }
+      }
+      throw e
+    }
+  }
+
+  #openVideoEvents(id: string) {
+    return this.#openEvents(() =>
+      this.client.get(`videos/${encodeURIComponent(id)}`, {
+        searchParams: { apiKey: this.apiKey, stream: "true" },
+        headers: { Accept: "text/event-stream" },
+      }),
+      true,
+    )
+  }
+
+  /**
+   * A refused request is the last event. A timeout or a network error is tried again, and a server
+   * error too when `retryServerErrors`: a new `renderVideo` request would render a second video.
+   */
+  async #openEvents(
+    request: () => Promise<Response>,
+    retryServerErrors: boolean,
+  ): Promise<OpenedEvents> {
+    try {
+      const res = await request()
+      return res.body ? { body: res.body } : null
+    } catch (e) {
+      if (e instanceof HTTPError && (e.response.status < 500 || !retryServerErrors)) {
+        const json = await e.response.json()
+        return { event: { type: "error", error: json.error } }
+      }
+      if (e instanceof HTTPError || e instanceof TimeoutError || e instanceof TypeError) return null
+      throw e
+    }
+  }
+
+  /**
+   * The events of a video until `done` or `error`. When the stream drops, it reads the video again
+   * by its id (`created`), so the video is not rendered twice.
+   */
+  async *#followVideo(
+    open: () => Promise<OpenedEvents>,
+    id?: string,
+  ): AsyncGenerator<RenderVideoEvent> {
+    let videoId = id
+    for (let attempt = 0; ; attempt++) {
+      const opened = await open()
+      if (opened && "event" in opened) {
+        yield opened.event
+        return
+      }
+      if (opened) {
+        try {
+          for await (const event of readEvents(opened.body)) {
+            if (event.type === "created") videoId = event.id
+            yield event
+            if (event.type === "done" || event.type === "error") return
+          }
+        } catch {
+          // The connection dropped: read the video again below.
+        }
+      }
+      const delay = RECONNECT_DELAYS_MS[attempt]
+      if (!videoId || delay === undefined) {
+        yield connectionLost(videoId)
+        return
+      }
+      await sleep(delay)
+      const reopened = videoId
+      open = () => this.#openVideoEvents(reopened)
     }
   }
 
