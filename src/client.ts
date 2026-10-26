@@ -31,6 +31,13 @@ type CreateOptions = {
   quality?: number
 }
 
+type VideoSignedUrlOptions = {
+  modifications?: Modification[]
+  nocache?: boolean
+  /** `m3u8` (the default): the video link, an HLS playlist. `mp4`: the MP4 file. */
+  format?: "m3u8" | "mp4"
+}
+
 type CreateStoredImageOptions = CreateOptions & {
   s3Config?: S3Config
 }
@@ -405,9 +412,7 @@ export class Bannerify {
   }
 
   async generateImageSignedUrl(templateId: string, options?: CreateOptions) {
-    const apiKeyHashed = await this.#hashText(this.apiKey)
     const searchParams = new URLSearchParams()
-    searchParams.set("apiKeyHashed", apiKeyHashed)
     if (options?.format) {
       const normalizedFormat = validateImageFormat(options.format)
       if (!normalizedFormat.ok) {
@@ -424,6 +429,37 @@ export class Bannerify {
     if (options?.nocache) {
       searchParams.set("nocache", "true")
     }
+    return this.#signUrl(templateId, searchParams)
+  }
+
+  /**
+   * The signed URL of a video template, to put in a page or a post: no request is made. With
+   * `m3u8` (the default) it is the video link, an HLS playlist that starts to play while the video
+   * renders, and plays at once when it rendered before. With `mp4` it redirects to the MP4 once it
+   * rendered, for videos of up to 15 seconds.
+   *
+   * @example
+   *   const url = await bannerify.generateVideoSignedUrl("tpl_xxx", {
+   *     modifications: [{ name: "Title", text: "Hello" }],
+   *   })
+   *   // <video src={url}> plays it in Safari; elsewhere use an HLS player such as hls.js
+   */
+  async generateVideoSignedUrl(templateId: string, options?: VideoSignedUrlOptions) {
+    const searchParams = new URLSearchParams()
+    if (options?.format) {
+      searchParams.set("format", options.format)
+    }
+    if (options?.modifications) {
+      searchParams.set("modifications", JSON.stringify(options.modifications))
+    }
+    if (options?.nocache) {
+      searchParams.set("nocache", "true")
+    }
+    return this.#signUrl(templateId, searchParams)
+  }
+
+  async #signUrl(templateId: string, searchParams: URLSearchParams) {
+    searchParams.set("apiKeyHashed", await this.#hashText(this.apiKey))
     searchParams.set("templateId", templateId)
     searchParams.sort()
     searchParams.set("sign", await this.#signText(searchParams.toString()))

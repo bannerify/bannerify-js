@@ -34,6 +34,19 @@ describe("generateImageSignedUrl", () => {
   })
 })
 
+describe("generateVideoSignedUrl", () => {
+  for (const golden of vectors.videoGolden) {
+    test(`builds the golden URL: ${golden.name}`, async () => {
+      const url = await client.generateVideoSignedUrl(golden.templateId, {
+        format: (golden.format ?? undefined) as "mp4" | undefined,
+        modifications: golden.modifications ?? undefined,
+        nocache: golden.nocache,
+      })
+      expect(url).toBe(golden.url)
+    })
+  }
+})
+
 describe("createImage", () => {
   test("sends no thumbnail field", async () => {
     let body: Record<string, unknown> = {}

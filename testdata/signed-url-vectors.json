@@ -99,5 +99,28 @@
       "modifications": null,
       "url": "https://api.example.test/v1/templates/signedurl?apiKeyHashed=62af8704764faf8ea82fc61ce9c4c3908b6cb97d463a634e9e587d7c885db0ef&format=png&templateId=tpl_golden&sign=b29d89cda8f6246e3a2433067c17976e9fd262a9422978530ac04578680469e7"
     }
+  ],
+  "videoGolden": [
+    {
+      "name": "the video link with modifications",
+      "templateId": "tpl_golden",
+      "format": null,
+      "modifications": [
+        {
+          "name": "title",
+          "text": "Sale! 50% off * today (limited)"
+        }
+      ],
+      "nocache": false,
+      "url": "https://api.example.test/v1/templates/signedurl?apiKeyHashed=62af8704764faf8ea82fc61ce9c4c3908b6cb97d463a634e9e587d7c885db0ef&modifications=%5B%7B%22name%22%3A%22title%22%2C%22text%22%3A%22Sale%21+50%25+off+*+today+%28limited%29%22%7D%5D&templateId=tpl_golden&sign=44bf4990ea0b98ec6c75bfc07465bf884bdd861240908dc76357ce04bba01be4"
+    },
+    {
+      "name": "the MP4 without the cache",
+      "templateId": "tpl_golden",
+      "format": "mp4",
+      "modifications": null,
+      "nocache": true,
+      "url": "https://api.example.test/v1/templates/signedurl?apiKeyHashed=62af8704764faf8ea82fc61ce9c4c3908b6cb97d463a634e9e587d7c885db0ef&format=mp4&nocache=true&templateId=tpl_golden&sign=1813f0bad1270a3a390dad34445857c18d8f10c4535a96c2f947b45a8cb9d6ed"
+    }
   ]
 }
