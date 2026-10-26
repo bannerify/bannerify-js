@@ -68,7 +68,7 @@ describe("createImage", () => {
 })
 
 describe("renderVideo", () => {
-  const sse = (events: { type: string }[]) =>
+  const sse = (events: Array<{ type: string; [key: string]: unknown }>) =>
     new Response(
       events.map((event) => `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`).join(""),
       { headers: { "Content-Type": "text/event-stream" } },
@@ -130,7 +130,7 @@ describe("renderVideo", () => {
   })
 
   /** A stream that sends `events`, then drops like a lost connection. */
-  const droppedAfter = (events: { type: string }[]) => {
+  const droppedAfter = (events: Array<{ type: string; [key: string]: unknown }>) => {
     const chunks = events.map((event) =>
       new TextEncoder().encode(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`),
     )
